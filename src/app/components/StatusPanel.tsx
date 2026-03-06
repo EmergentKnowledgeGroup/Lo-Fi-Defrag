@@ -21,12 +21,12 @@ interface StatusPanelProps {
 }
 
 const LEGEND_ITEMS = [
-  { label: 'Used', state: 'used', token: '.' },
-  { label: 'Reading', state: 'reading', token: 'R' },
-  { label: 'Bad', state: 'bad', token: 'B' },
-  { label: 'Unused', state: 'unused', token: '' },
-  { label: 'Writing', state: 'writing', token: 'W' },
-  { label: 'Unmovable', state: 'unmovable', token: 'X' },
+  { label: 'Used', cls: 'cell--used', char: '\u2588' },
+  { label: 'Reading', cls: 'cell--reading', char: '\u2588' },
+  { label: 'Bad', cls: 'cell--bad', char: 'B' },
+  { label: 'Unused', cls: 'cell--unused', char: '\u00B7' },
+  { label: 'Writing', cls: 'cell--writing', char: '\u2588' },
+  { label: 'Unmovable', cls: 'cell--unmovable', char: 'X' },
 ] as const;
 
 export function StatusPanel({
@@ -63,10 +63,7 @@ export function StatusPanel({
       <div className="legend-row">
         {LEGEND_ITEMS.map((item) => (
           <span key={item.label} className="legend-row__item">
-            <span
-              className={`legend-row__swatch sector sector--${item.state}`}
-              data-token={item.token}
-            />
+            <span className={`legend-row__char ${item.cls}`}>{item.char}</span>
             <span>{item.label}</span>
           </span>
         ))}
@@ -75,26 +72,55 @@ export function StatusPanel({
       <div className="controls-row">
         <label className="controls-row__item">
           <span>Skin</span>
-          <select value={selectedSkinId} onChange={(e) => onSkinChange(e.target.value as SkinId)}>
+          <select
+            value={selectedSkinId}
+            onChange={(e) => onSkinChange(e.target.value as SkinId)}
+          >
             {SKINS.map((skin) => (
-              <option key={skin.id} value={skin.id}>{skin.label}</option>
+              <option key={skin.id} value={skin.id}>
+                {skin.label}
+              </option>
             ))}
           </select>
         </label>
         <label className="controls-row__item">
           <span>Speed</span>
-          <input type="range" min="0.45" max="2" step="0.05" value={speed} onChange={(e) => onSpeedChange(Number(e.target.value))} />
+          <input
+            type="range"
+            min="0.45"
+            max="2"
+            step="0.05"
+            value={speed}
+            onChange={(e) => onSpeedChange(Number(e.target.value))}
+          />
           <span>{speed.toFixed(2)}x</span>
         </label>
         <label className="controls-row__item">
           <span>Sync</span>
-          <input type="checkbox" checked={beatSyncEnabled} onChange={(e) => onBeatSyncChange(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={beatSyncEnabled}
+            onChange={(e) => onBeatSyncChange(e.target.checked)}
+          />
         </label>
         <label className="controls-row__item">
           <span>BPM</span>
-          <input type="number" min="60" max="160" value={manualBpm} onChange={(e) => onManualBpmChange(Number(e.target.value))} />
+          <input
+            type="number"
+            min="60"
+            max="160"
+            value={manualBpm}
+            onChange={(e) => onManualBpmChange(Number(e.target.value))}
+          />
         </label>
-        <button onClick={onToggleFullscreen}>{isFullscreen ? 'Win' : 'FS'}</button>
+        <button
+          type="button"
+          className="button"
+          aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          onClick={onToggleFullscreen}
+        >
+          {isFullscreen ? 'Win' : 'FS'}
+        </button>
       </div>
     </section>
   );

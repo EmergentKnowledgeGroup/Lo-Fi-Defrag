@@ -12,6 +12,7 @@ interface SimulationOptions {
   beatSyncEnabled: boolean;
   effectiveBpm: number | null;
   energyLevel: number;
+  isRunning: boolean;
   speed: number;
 }
 
@@ -39,20 +40,24 @@ function getViewportDimensions(): ViewportDimensions {
   };
 }
 
+/**
+ * Compute grid density based on viewport.
+ * Each cell is a single monospace character (~7px wide, ~14px tall at 12px font).
+ * We want the grid to fill most of the window, leaving ~180px for bottom panels.
+ */
 function getBoardDensity(viewport: ViewportDimensions): Pick<
   SimulationConfig,
   'columns' | 'fieldRows'
 > {
-  if (viewport.width < 760) {
-    return { columns: 34, fieldRows: viewport.height < 760 ? 11 : 13 };
-  }
-  if (viewport.width < 1100) {
-    return { columns: 48, fieldRows: viewport.height < 800 ? 15 : 17 };
-  }
-  if (viewport.width < 1480) {
-    return { columns: 64, fieldRows: viewport.height < 860 ? 18 : 20 };
-  }
-  return { columns: 82, fieldRows: viewport.height < 940 ? 22 : 24 };
+  const charWidth = 7.2;
+  const charHeight = 14;
+  const bottomPanelHeight = 180;
+  const titleBarHeight = 24;
+  const availableWidth = viewport.width - 4; // 2px padding each side
+  const availableHeight = viewport.height - bottomPanelHeight - titleBarHeight;
+  const columns = Math.max(40, Math.floor(availableWidth / charWidth));
+  const fieldRows = Math.max(12, Math.floor(availableHeight / charHeight));
+  return { columns, fieldRows };
 }
 
 export function useSimulation(options: SimulationOptions): {
@@ -103,6 +108,10 @@ export function useSimulation(options: SimulationOptions): {
   }, [config.columns, config.fieldRows]);
 
   useEffect(() => {
+    if (!options.isRunning) {
+      return;
+    }
+
     let animationFrame = 0;
     let lastFrameTime = performance.now();
 
@@ -126,7 +135,7 @@ export function useSimulation(options: SimulationOptions): {
     return () => {
       window.cancelAnimationFrame(animationFrame);
     };
-  }, []);
+  }, [options.isRunning]);
 
   return {
     rowsCompletedInPass: getRowsCompletedInPass(state),

@@ -17,16 +17,17 @@
   --app-border: #5555ff;
   --app-accent: #ffff55;
   --app-accent-soft: #444400;
-  --sector-used: #d9defd;
-  --sector-reading: #1a40fd;
-  --sector-writing: #1a40fd;
-  --sector-unused: rgba(238, 242, 255, 0.24);
-  --sector-bad: #150405;
-  --sector-unmovable: #eef2ff;
-  --sector-lane: #ffe95a;
-  --sector-highlight: #ffec5f;
-  --sector-token-dark: #0000aa;
-  --sector-token-light: #ffffff;
+  --cell-used: #ffffff;
+  --cell-reading: #55ff55;
+  --cell-writing: #ffff55;
+  --cell-bad: #ff5555;
+  --cell-unmovable: #aaaaaa;
+  --cell-unused: transparent;
+  --cell-lane: #ffff55;
+  --cell-highlight: #ffffff;
+  --bar-filled: #ffffff;
+  --bar-empty: #555555;
+  --bar-head: #ffff55;
 }
 
 * {
@@ -67,16 +68,17 @@ button {
   --app-border: #5555ff;
   --app-accent: #ffff55;
   --app-accent-soft: #444400;
-  --sector-used: #edf1ff;
-  --sector-reading: #2043ff;
-  --sector-writing: #2043ff;
-  --sector-unused: rgba(238, 242, 255, 0.3);
-  --sector-bad: #180202;
-  --sector-unmovable: #eef2ff;
-  --sector-lane: #ffe85f;
-  --sector-highlight: #ffe85f;
-  --sector-token-dark: #0000aa;
-  --sector-token-light: #ffffff;
+  --cell-used: #ffffff;
+  --cell-reading: #55ff55;
+  --cell-writing: #ffff55;
+  --cell-bad: #ff5555;
+  --cell-unmovable: #aaaaaa;
+  --cell-unused: transparent;
+  --cell-lane: #ffff55;
+  --cell-highlight: #ffffff;
+  --bar-filled: #ffffff;
+  --bar-empty: #555555;
+  --bar-head: #ffff55;
 }
 
 [data-skin='crt-lounge'] {
@@ -88,16 +90,17 @@ button {
   --app-border: #1a6633;
   --app-accent: #ffbe56;
   --app-accent-soft: #3d2e00;
-  --sector-used: #bedfc9;
-  --sector-reading: #25506a;
-  --sector-writing: #25506a;
-  --sector-unused: rgba(93, 201, 161, 0.12);
-  --sector-bad: #361412;
-  --sector-unmovable: #d7efe0;
-  --sector-lane: #ffbe56;
-  --sector-highlight: #ffd063;
-  --sector-token-dark: #0a1810;
-  --sector-token-light: #33ff66;
+  --cell-used: #33ff66;
+  --cell-reading: #66ffaa;
+  --cell-writing: #ffbe56;
+  --cell-bad: #ff5555;
+  --cell-unmovable: #557755;
+  --cell-unused: transparent;
+  --cell-lane: #ffbe56;
+  --cell-highlight: #33ff66;
+  --bar-filled: #33ff66;
+  --bar-empty: #1a4422;
+  --bar-head: #ffbe56;
 }
 
 [data-skin='studio-modern'] {
@@ -110,16 +113,17 @@ button {
   --app-border: #b0a48e;
   --app-accent: #ef6b2d;
   --app-accent-soft: #3d1a08;
-  --sector-used: #e8ded3;
-  --sector-reading: #4f6fff;
-  --sector-writing: #4f6fff;
-  --sector-unused: rgba(29, 24, 20, 0.12);
-  --sector-bad: #6a0c00;
-  --sector-unmovable: #fff8ef;
-  --sector-lane: #ffb14d;
-  --sector-highlight: #ffb14d;
-  --sector-token-dark: #6b5643;
-  --sector-token-light: #fff8ef;
+  --cell-used: #1d1814;
+  --cell-reading: #4f6fff;
+  --cell-writing: #ef6b2d;
+  --cell-bad: #cc0000;
+  --cell-unmovable: #8a7a66;
+  --cell-unused: transparent;
+  --cell-lane: #ef6b2d;
+  --cell-highlight: #1d1814;
+  --bar-filled: #1d1814;
+  --bar-empty: #b0a48e;
+  --bar-head: #ef6b2d;
 }
 
 /* ── Boot Screen ─────────────────────────────────────── */
@@ -197,94 +201,32 @@ button {
   flex-direction: column;
 }
 
-.board-shell {
+.board-text {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding: 2px;
-  background: var(--app-panel-soft);
-}
-
-.board-shell__lane,
-.board-shell__field {
-  display: grid;
-  gap: 1px;
-}
-
-.board-shell__lane {
-  margin-bottom: 2px;
-}
-
-/* ── Sectors ─────────────────────────────────────────── */
-
-.sector {
-  position: relative;
-  width: 100%;
-  min-height: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sector::before {
-  content: '';
-  display: block;
-  padding-top: 100%;
-}
-
-.sector::after {
-  content: attr(data-token);
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 7px;
-  font-weight: 700;
+  margin: 0;
+  padding: 0 2px;
+  background: var(--app-background);
+  font-family: 'Perfect DOS VGA 437', 'Fixedsys', 'Terminal', 'Cascadia Mono',
+    'Consolas', monospace;
+  font-size: 12px;
   line-height: 1;
-  opacity: 0.9;
+  letter-spacing: 0;
+  white-space: pre;
+  user-select: none;
 }
 
-.sector--used {
-  background: var(--sector-used);
-  color: var(--sector-token-dark);
-}
+/* ── Cell Colors (foreground only) ───────────────────── */
 
-.sector--reading {
-  background: var(--sector-reading);
-  color: var(--sector-token-light);
-}
-
-.sector--writing {
-  background: var(--sector-writing);
-  color: var(--sector-token-light);
-}
-
-.sector--lane-used,
-.sector--lane-writing {
-  background: var(--sector-lane);
-  color: var(--sector-token-dark);
-}
-
-.sector--unused {
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.6) 15%, transparent 16%),
-    var(--sector-unused);
-  background-size: 4px 4px;
-  color: transparent;
-}
-
-.sector--bad {
-  background: var(--sector-bad);
-  color: #fe7b45;
-}
-
-.sector--unmovable {
-  background: var(--sector-unmovable);
-  color: var(--sector-token-dark);
-}
-
-.sector--highlight {
-  background: var(--sector-highlight);
-  color: var(--sector-token-dark);
-}
+.cell--used { color: var(--cell-used); }
+.cell--reading { color: var(--cell-reading); }
+.cell--writing { color: var(--cell-writing); }
+.cell--bad { color: var(--cell-bad); }
+.cell--unmovable { color: var(--cell-unmovable); }
+.cell--unused { color: transparent; }
+.cell--lane { color: var(--cell-lane); }
+.cell--highlight { color: var(--cell-highlight); }
 
 /* ── Status Panel ────────────────────────────────────── */
 
@@ -317,18 +259,11 @@ button {
   font-size: 0.8rem;
 }
 
-.legend-row__swatch {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-}
-
-.legend-row__swatch::before {
-  padding-top: 0;
-}
-
-.legend-row__swatch::after {
-  font-size: 6px;
+.legend-row__char {
+  font-family: 'Perfect DOS VGA 437', 'Fixedsys', 'Terminal', 'Cascadia Mono',
+    'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1;
 }
 
 .controls-row {
@@ -384,6 +319,7 @@ button {
 }
 
 .transport-row__title {
+  flex: 1 1 12rem;
   font-size: 0.85rem;
   text-transform: uppercase;
   white-space: nowrap;
@@ -436,6 +372,12 @@ button {
   background: rgba(0, 0, 0, 0.15);
 }
 
+.button:focus-visible,
+.ascii-bar--interactive:focus-visible {
+  outline: 1px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
 /* ── Playlist Panel ──────────────────────────────────── */
 
 .panel--playlist {
@@ -472,6 +414,10 @@ button {
   color: var(--app-accent);
 }
 
+.playlist-item--missing {
+  opacity: 0.76;
+}
+
 .playlist-item__main {
   display: flex;
   align-items: center;
@@ -492,6 +438,8 @@ button {
 }
 
 .playlist-item__title {
+  flex: 1 1 auto;
+  min-width: 0;
   text-transform: uppercase;
   font-size: 0.8rem;
   white-space: nowrap;
@@ -500,10 +448,13 @@ button {
 }
 
 .playlist-item__meta {
-  flex-shrink: 0;
+  flex: 0 1 18rem;
+  min-width: 0;
   color: var(--app-muted);
   font-size: 0.75rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .playlist-item--active .playlist-item__meta {
@@ -520,35 +471,72 @@ button {
 /* ── ASCII Progress Bars ─────────────────────────────── */
 
 .ascii-bar {
-  display: flex;
-  gap: 1px;
+  display: inline-flex;
   align-items: center;
+  min-width: 0;
+  font-family: 'Perfect DOS VGA 437', 'Fixedsys', 'Terminal', 'Cascadia Mono',
+    'Consolas', monospace;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
 }
 
 .ascii-bar--interactive {
   cursor: pointer;
 }
 
+.ascii-bar--static {
+  cursor: default;
+}
+
 .ascii-bar__tile {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
+  /* No width/height — sized by the character glyph */
 }
 
 .ascii-bar__tile--filled {
-  background: var(--sector-used);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--bar-filled);
 }
 
 .ascii-bar__tile--empty {
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.6) 15%, transparent 16%),
-    var(--sector-unused);
-  background-size: 4px 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--bar-empty);
 }
 
 .ascii-bar__tile--head {
-  background: var(--sector-highlight);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--bar-head);
+}
+
+.transport-status {
+  margin: 0;
+  padding: 3px 8px 6px;
+  border-top: 1px solid var(--app-border);
+  color: var(--app-muted);
+  font-size: 0.75rem;
+}
+
+.transport-status--warning {
+  color: #ffb48a;
+}
+
+@media (max-width: 760px) {
+  .transport-row__artist {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .playlist-item {
+    align-items: flex-start;
+  }
+
+  .playlist-item__main {
+    flex-wrap: wrap;
+  }
+
+  .playlist-item__meta {
+    flex-basis: 100%;
+    margin-left: calc(1ch + 4px);
+  }
+
+  .playlist-item__actions {
+    margin-left: auto;
+  }
 }
