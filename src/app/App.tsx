@@ -6,7 +6,7 @@ import { PlaylistPanel } from './components/PlaylistPanel';
 import { StatusPanel } from './components/StatusPanel';
 import { TransportPanel } from './components/TransportPanel';
 import { VisualizationBoard } from './components/VisualizationBoard';
-import { getSkin } from './skins';
+
 import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { useSimulation } from './hooks/useSimulation';
 
@@ -33,7 +33,6 @@ function AppShell({
     normalizeManualBpm(initialSession.manualBpm ?? 92),
   );
   const [isFullscreen, setIsFullscreen] = useState(initialFullscreen);
-  const selectedSkin = getSkin(skinId);
   const player = useAudioPlayer(initialSession);
   const effectiveBpm = beatSyncEnabled
     ? player.estimatedBpm ?? manualBpm
