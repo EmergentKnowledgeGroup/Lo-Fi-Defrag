@@ -1,0 +1,14 @@
+# Checkpoint
+
+- `step`: `post-green`
+- `note`: Local gates are green for the Electron + React ambient defragger app. Next step is committing the work; PR and CodeRabbit steps are blocked until a git remote exists.
+- `branch`: `codex/lofi-defragger`
+- `head`: `2216016f82a0ae68cfa59a15a3f8e0f037f50cd7`
+- `next_cmd`: `git add . && git commit -m "feat: build lo-fi defragger desktop app"`
+
+## Validations
+
+- `npm run typecheck` - passed
+- `npm run lint` - passed
+- `npm run test` - passed
+- `npm run build` - passed

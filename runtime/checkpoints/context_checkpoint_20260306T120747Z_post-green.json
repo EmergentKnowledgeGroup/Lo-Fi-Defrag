@@ -1,0 +1,45 @@
+{
+  "schema": "impressio.context_checkpoint.v1",
+  "captured_at": "2026-03-06T12:07:47.155583+00:00",
+  "repo_root": "/Users/domusanimae/Documents/Lo-fi-defragger",
+  "branch": "codex/lofi-defragger",
+  "head_short": "2216016",
+  "step": "post-green",
+  "note": "Local gates are green for the Electron + React implementation. Next step is cleaning scaffold residue, reviewing diffs, and preparing the git commit / PR flow.",
+  "next_cmd": "git status --short --branch",
+  "status": {
+    "staged": [],
+    "modified": [],
+    "untracked": [
+      ".bootstrap-app/",
+      ".eslintrc.json",
+      ".gitignore",
+      "forge.config.ts",
+      "forge.env.d.ts",
+      "index.html",
+      "package-lock.json",
+      "package.json",
+      "runtime/",
+      "src/",
+      "tsconfig.json",
+      "vite.main.config.ts",
+      "vite.preload.config.ts",
+      "vite.renderer.config.ts",
+      "vitest.config.ts"
+    ],
+    "conflicted": [],
+    "dirty": true
+  },
+  "changed_files": {
+    "working_tree": [],
+    "staged": []
+  },
+  "recent_commits": [
+    "2216016 chore: initialize repository"
+  ],
+  "checklist": [
+    "Run git status -sb and verify branch/head.",
+    "Open diff for changed files listed in checkpoint.",
+    "Resume from step + next_cmd, then write a new checkpoint after each major edit block."
+  ]
+}
