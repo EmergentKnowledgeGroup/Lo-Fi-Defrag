@@ -1,12 +1,15 @@
 import type { SkinId } from '../../shared/types';
 import { formatClock, formatSpeedLabel } from '../formatters';
 import { SKINS } from '../skins';
+import { AsciiBar } from './AsciiBar';
 
 interface StatusPanelProps {
   beatSyncEnabled: boolean;
   bpmStatus: 'idle' | 'listening' | 'ready';
+  currentLaneCapacity: number;
   currentLaneFill: number;
   currentPass: number;
+  defragProgress: number;
   effectiveBpm: number | null;
   elapsedSeconds: number;
   estimatedBpm: number | null;
@@ -25,19 +28,21 @@ interface StatusPanelProps {
 }
 
 const LEGEND_ITEMS = [
-  { label: 'Used', state: 'used' },
-  { label: 'Reading', state: 'reading' },
-  { label: 'Bad', state: 'bad' },
-  { label: 'Unused', state: 'unused' },
-  { label: 'Writing', state: 'writing' },
-  { label: 'Unmovable', state: 'unmovable' },
+  { label: 'Used', state: 'used', token: '.' },
+  { label: 'Reading', state: 'reading', token: 'R' },
+  { label: 'Bad', state: 'bad', token: 'B' },
+  { label: 'Unused', state: 'unused', token: '' },
+  { label: 'Writing', state: 'writing', token: 'W' },
+  { label: 'Unmovable', state: 'unmovable', token: 'X' },
 ] as const;
 
 export function StatusPanel({
   beatSyncEnabled,
   bpmStatus,
+  currentLaneCapacity,
   currentLaneFill,
   currentPass,
+  defragProgress,
   effectiveBpm,
   elapsedSeconds,
   estimatedBpm,
@@ -60,110 +65,50 @@ export function StatusPanel({
         <span className="panel__title">Status</span>
         <span className="panel__meta">Continuous Optimization</span>
       </div>
-      <div className="status-grid">
-        <div className="status-grid__card">
-          <p className="status-grid__eyebrow">Cluster</p>
-          <p className="status-grid__value">Cluster {statusCluster}</p>
-          <p className="status-grid__small">Pass {currentPass}</p>
-          <p className="status-grid__small">Elapsed {formatClock(elapsedSeconds)}</p>
-        </div>
-        <div className="status-grid__card">
-          <p className="status-grid__eyebrow">Current Row</p>
-          <p className="status-grid__value">
-            {currentLaneFill} / {rowsPerPass} sectors queued
-          </p>
-          <div className="meter">
-            <div
-              className="meter__fill"
-              style={{ width: `${(rowsCompletedInPass / rowsPerPass) * 100}%` }}
-            />
-          </div>
-          <p className="status-grid__small">
-            Rows this pass {rowsCompletedInPass} / {rowsPerPass}
-          </p>
-        </div>
-        <div className="status-grid__card">
-          <p className="status-grid__eyebrow">Cadence</p>
-          <p className="status-grid__value">{formatSpeedLabel(speed)}</p>
-          <p className="status-grid__small">
-            {beatSyncEnabled
-              ? estimatedBpm
-                ? `Auto BPM ${estimatedBpm}`
-                : bpmStatus === 'listening'
-                  ? 'Listening for BPM...'
-                  : `Manual BPM ${manualBpm}`
-              : 'Manual speed only'}
-          </p>
-          <p className="status-grid__small">
-            Effective BPM {effectiveBpm ? effectiveBpm : 'Off'}
-          </p>
-        </div>
+
+      <div className="status-row">
+        <span>Cluster {statusCluster}</span>
+        <span>Elapsed {formatClock(elapsedSeconds)}</span>
+        <span>Pass {currentPass}</span>
+        <AsciiBar value={defragProgress} tiles={20} label="Defrag progress" />
+        <span>{Math.round(defragProgress * 100)}%</span>
       </div>
 
-      <div className="controls-grid">
-        <label className="control">
-          <span className="control__label">Skin</span>
-          <select
-            className="control__select"
-            value={selectedSkinId}
-            onChange={(event) => onSkinChange(event.target.value as SkinId)}
-          >
+      <div className="legend-row">
+        {LEGEND_ITEMS.map((item) => (
+          <span key={item.label} className="legend-row__item">
+            <span
+              className={`legend-row__swatch sector sector--${item.state}`}
+              data-token={item.token}
+            />
+            <span>{item.label}</span>
+          </span>
+        ))}
+      </div>
+
+      <div className="controls-row">
+        <label className="controls-row__item">
+          <span>Skin</span>
+          <select value={selectedSkinId} onChange={(e) => onSkinChange(e.target.value as SkinId)}>
             {SKINS.map((skin) => (
-              <option key={skin.id} value={skin.id}>
-                {skin.label}
-              </option>
+              <option key={skin.id} value={skin.id}>{skin.label}</option>
             ))}
           </select>
         </label>
-
-        <label className="control">
-          <span className="control__label">Speed</span>
-          <input
-            className="control__range"
-            type="range"
-            min="0.45"
-            max="2"
-            step="0.05"
-            value={speed}
-            onChange={(event) => onSpeedChange(Number(event.target.value))}
-          />
-          <span className="control__hint">{speed.toFixed(2)}x</span>
+        <label className="controls-row__item">
+          <span>Speed</span>
+          <input type="range" min="0.45" max="2" step="0.05" value={speed} onChange={(e) => onSpeedChange(Number(e.target.value))} />
+          <span>{speed.toFixed(2)}x</span>
         </label>
-
-        <label className="control control--inline">
-          <span className="control__label">Beat Sync</span>
-          <input
-            checked={beatSyncEnabled}
-            className="control__checkbox"
-            type="checkbox"
-            onChange={(event) => onBeatSyncChange(event.target.checked)}
-          />
+        <label className="controls-row__item">
+          <span>Sync</span>
+          <input type="checkbox" checked={beatSyncEnabled} onChange={(e) => onBeatSyncChange(e.target.checked)} />
         </label>
-
-        <label className="control">
-          <span className="control__label">Manual BPM</span>
-          <input
-            className="control__number"
-            type="number"
-            min="60"
-            max="160"
-            value={manualBpm}
-            onChange={(event) => onManualBpmChange(Number(event.target.value))}
-          />
+        <label className="controls-row__item">
+          <span>BPM</span>
+          <input type="number" min="60" max="160" value={manualBpm} onChange={(e) => onManualBpmChange(Number(e.target.value))} />
         </label>
-
-        <button className="button button--secondary" onClick={onToggleFullscreen}>
-          {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-        </button>
-      </div>
-
-      <div className="legend">
-        {LEGEND_ITEMS.map((item) => (
-          <div key={item.label} className="legend__item">
-            <span className={`legend__swatch sector sector--${item.state}`} />
-            <span>{item.label}</span>
-          </div>
-        ))}
+        <button onClick={onToggleFullscreen}>{isFullscreen ? 'Win' : 'FS'}</button>
       </div>
     </section>
   );
