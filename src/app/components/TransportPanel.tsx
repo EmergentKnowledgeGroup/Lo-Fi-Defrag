@@ -3,15 +3,11 @@ import { formatDuration } from '../formatters';
 import { AsciiBar } from './AsciiBar';
 
 interface TransportPanelProps {
-  analysisEnergy: number;
-  bpmStatus: 'idle' | 'listening' | 'ready';
   currentTrackArtist: string | null;
   currentTrackTitle: string;
-  currentTrackMissing: boolean;
   duration: number;
   isMuted: boolean;
   isPlaying: boolean;
-  isTrackLoaded: boolean;
   onImportFiles: () => void;
   onImportFolder: () => void;
   onMuteToggle: () => void;

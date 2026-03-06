@@ -86,12 +86,8 @@ function AppShell({
     speed,
   ]);
 
-  const currentLaneFill = simulation.state.lane.filter(
-    (slot) => slot.state === 'used' || slot.state === 'writing',
-  ).length;
   const currentTrackTitle = player.currentTrack?.title ?? 'No track loaded';
   const currentTrackArtist = player.currentTrack?.artist ?? null;
-  const currentTrackMissing = Boolean(player.currentTrack?.missing);
 
   return (
     <div className="app-shell" data-skin={skinId}>
@@ -99,14 +95,9 @@ function AppShell({
         <VisualizationBoard state={simulation.state} />
         <StatusPanel
           beatSyncEnabled={beatSyncEnabled}
-          bpmStatus={player.bpmStatus}
-          currentLaneCapacity={simulation.state.columns}
-          currentLaneFill={currentLaneFill}
           currentPass={simulation.state.passNumber}
           defragProgress={simulation.rowsCompletedInPass / DEFAULT_ROWS_PER_PASS}
-          effectiveBpm={effectiveBpm}
           elapsedSeconds={simulation.state.elapsedMs / 1000}
-          estimatedBpm={player.estimatedBpm}
           isFullscreen={isFullscreen}
           manualBpm={manualBpm}
           onBeatSyncChange={setBeatSyncEnabled}
@@ -118,22 +109,16 @@ function AppShell({
               setIsFullscreen(value);
             });
           }}
-          rowsCompletedInPass={simulation.rowsCompletedInPass}
-          rowsPerPass={DEFAULT_ROWS_PER_PASS}
           selectedSkinId={skinId}
           speed={speed}
           statusCluster={simulation.state.clusterNumber}
         />
         <TransportPanel
-          analysisEnergy={player.energyLevel}
-          bpmStatus={player.bpmStatus}
           currentTrackArtist={currentTrackArtist}
-          currentTrackMissing={currentTrackMissing}
           currentTrackTitle={currentTrackTitle}
           duration={player.trackDuration}
           isMuted={player.isMuted}
           isPlaying={player.isPlaying}
-          isTrackLoaded={Boolean(player.currentTrack)}
           onImportFiles={() => {
             void player.importAudio('files');
           }}

@@ -1,18 +1,13 @@
 import type { SkinId } from '../../shared/types';
-import { formatClock, formatSpeedLabel } from '../formatters';
+import { formatClock } from '../formatters';
 import { SKINS } from '../skins';
 import { AsciiBar } from './AsciiBar';
 
 interface StatusPanelProps {
   beatSyncEnabled: boolean;
-  bpmStatus: 'idle' | 'listening' | 'ready';
-  currentLaneCapacity: number;
-  currentLaneFill: number;
   currentPass: number;
   defragProgress: number;
-  effectiveBpm: number | null;
   elapsedSeconds: number;
-  estimatedBpm: number | null;
   isFullscreen: boolean;
   manualBpm: number;
   onBeatSyncChange: (value: boolean) => void;
@@ -20,8 +15,6 @@ interface StatusPanelProps {
   onSkinChange: (value: SkinId) => void;
   onSpeedChange: (value: number) => void;
   onToggleFullscreen: () => void;
-  rowsCompletedInPass: number;
-  rowsPerPass: number;
   selectedSkinId: SkinId;
   speed: number;
   statusCluster: number;
@@ -38,14 +31,9 @@ const LEGEND_ITEMS = [
 
 export function StatusPanel({
   beatSyncEnabled,
-  bpmStatus,
-  currentLaneCapacity,
-  currentLaneFill,
   currentPass,
   defragProgress,
-  effectiveBpm,
   elapsedSeconds,
-  estimatedBpm,
   isFullscreen,
   manualBpm,
   onBeatSyncChange,
@@ -53,8 +41,6 @@ export function StatusPanel({
   onSkinChange,
   onSpeedChange,
   onToggleFullscreen,
-  rowsCompletedInPass,
-  rowsPerPass,
   selectedSkinId,
   speed,
   statusCluster,
