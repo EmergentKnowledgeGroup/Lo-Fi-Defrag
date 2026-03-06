@@ -1,5 +1,6 @@
 import type { RepeatMode } from '../../shared/types';
 import { formatDuration } from '../formatters';
+import { AsciiBar } from './AsciiBar';
 
 interface TransportPanelProps {
   analysisEnergy: number;
@@ -10,6 +11,7 @@ interface TransportPanelProps {
   duration: number;
   isMuted: boolean;
   isPlaying: boolean;
+  isTrackLoaded: boolean;
   onImportFiles: () => void;
   onImportFolder: () => void;
   onMuteToggle: () => void;
@@ -27,11 +29,8 @@ interface TransportPanelProps {
 const REPEAT_OPTIONS: RepeatMode[] = ['off', 'one', 'all'];
 
 export function TransportPanel({
-  analysisEnergy,
-  bpmStatus,
   currentTrackArtist,
   currentTrackTitle,
-  currentTrackMissing,
   duration,
   isMuted,
   isPlaying,
@@ -55,106 +54,59 @@ export function TransportPanel({
         <span className="panel__meta">Local Files</span>
       </div>
 
-      <div className="transport__track">
-        <div>
-          <p className="transport__eyebrow">Now Playing</p>
-          <h2 className="transport__title">{currentTrackTitle}</h2>
-          <p className="transport__subtitle">
-            {currentTrackArtist || 'Unknown artist'}
-          </p>
-        </div>
-        <div className="energy-meter" aria-label="Audio energy meter">
-          <div
-            className="energy-meter__fill"
-            style={{ width: `${Math.max(8, analysisEnergy * 100)}%` }}
-          />
-        </div>
+      {/* Row 1 - Track info */}
+      <div className="transport-row">
+        <span className="transport-row__status">{isPlaying ? '\u25B6' : '\u23F8'}</span>
+        <span className="transport-row__title">{currentTrackTitle}</span>
+        <span className="transport-row__artist">{currentTrackArtist || 'Unknown artist'}</span>
       </div>
 
-      <div className="transport__progress">
-        <input
-          className="control__range"
-          type="range"
-          min="0"
-          max={Math.max(duration, playbackPosition, 1)}
-          step="0.1"
-          value={playbackPosition}
-          onChange={(event) => onSeek(Number(event.target.value))}
+      {/* Row 2 - Seek bar */}
+      <div className="transport-row">
+        <AsciiBar
+          value={duration > 0 ? playbackPosition / duration : 0}
+          tiles={30}
+          showHead
+          onClick={(v) => onSeek(v * Math.max(duration, 1))}
+          label="Seek"
         />
-        <div className="transport__timecodes">
-          <span>{formatDuration(playbackPosition)}</span>
-          <span>{formatDuration(duration)}</span>
-        </div>
+        <span className="transport-row__time">
+          {formatDuration(playbackPosition)} / {formatDuration(duration)}
+        </span>
       </div>
 
-      <div className="transport__controls">
-        <button className="button" onClick={onPrevious}>
-          Prev
-        </button>
+      {/* Row 3 - Transport buttons */}
+      <div className="transport-row">
+        <button className="button" onClick={onPrevious}>Prev</button>
         <button className="button button--primary" onClick={() => void onPlayPause()}>
           {isPlaying ? 'Pause' : 'Play'}
         </button>
-        <button className="button" onClick={onNext}>
-          Next
-        </button>
+        <button className="button" onClick={onNext}>Next</button>
+        <button className="button" onClick={onImportFiles}>Import</button>
+        <button className="button" onClick={onImportFolder}>Folder</button>
+        <button className="button" onClick={onMuteToggle}>{isMuted ? 'Unmute' : 'Mute'}</button>
       </div>
 
-      <div className="transport__controls transport__controls--secondary">
-        <button className="button button--secondary" onClick={onImportFiles}>
-          Import Files
-        </button>
-        <button className="button button--secondary" onClick={onImportFolder}>
-          Import Folder
-        </button>
-        <button className="button button--secondary" onClick={onMuteToggle}>
-          {isMuted ? 'Unmute' : 'Mute'}
-        </button>
+      {/* Row 4 - Volume + Repeat */}
+      <div className="transport-row">
+        <span>Vol:</span>
+        <AsciiBar
+          value={volume}
+          tiles={10}
+          onClick={onVolumeChange}
+          label="Volume"
+        />
+        <span>Repeat:</span>
+        {REPEAT_OPTIONS.map((option) => (
+          <button
+            key={option}
+            className={`button ${repeatMode === option ? 'button--primary' : ''}`}
+            onClick={() => onRepeatChange(option)}
+          >
+            {option === 'off' ? 'Off' : option === 'one' ? '1' : 'All'}
+          </button>
+        ))}
       </div>
-
-      <div className="transport__footer">
-        <div className="transport__volume">
-          <span className="transport__eyebrow">Volume</span>
-          <input
-            className="control__range"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={(event) => onVolumeChange(Number(event.target.value))}
-          />
-        </div>
-
-        <div className="repeat-toggle" role="radiogroup" aria-label="Repeat mode">
-          {REPEAT_OPTIONS.map((option) => (
-            <button
-              key={option}
-              className={`repeat-toggle__button ${
-                repeatMode === option ? 'repeat-toggle__button--active' : ''
-              }`}
-              onClick={() => onRepeatChange(option)}
-            >
-              {option === 'off'
-                ? 'Repeat Off'
-                : option === 'one'
-                  ? 'Repeat 1'
-                  : 'Repeat All'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <p
-        className={`transport__status ${
-          currentTrackMissing ? 'transport__status--warning' : ''
-        }`}
-      >
-        {currentTrackMissing
-          ? 'Current file is missing. Pick another track or re-import the source.'
-          : bpmStatus === 'listening'
-            ? 'Listening to the beat so the board can pick up the cadence.'
-            : 'The board keeps running even when no track is playing.'}
-      </p>
     </section>
   );
 }
