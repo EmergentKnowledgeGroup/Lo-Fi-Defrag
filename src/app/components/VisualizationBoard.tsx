@@ -1,14 +1,28 @@
 import type { SimulationState, SectorState } from '../../shared/types';
-import { getLaneVisualState } from '../simulation/engine';
+import { getLaneVisualState, type LaneVisualState } from '../simulation/engine';
 
-const CELL_CLASS_NAMES: Record<SectorState | 'highlight', string> = {
+const CELL_CLASS_NAMES: Record<SectorState | LaneVisualState, string> = {
   bad: 'sector sector--bad',
   highlight: 'sector sector--highlight',
+  'lane-used': 'sector sector--lane-used',
+  'lane-writing': 'sector sector--lane-writing',
   reading: 'sector sector--reading',
   unmovable: 'sector sector--unmovable',
   unused: 'sector sector--unused',
   used: 'sector sector--used',
   writing: 'sector sector--writing',
+};
+
+const CELL_TOKENS: Record<SectorState | LaneVisualState, string> = {
+  bad: 'B',
+  highlight: '.',
+  'lane-used': '.',
+  'lane-writing': 'W',
+  reading: 'R',
+  unmovable: 'X',
+  unused: '',
+  used: '.',
+  writing: 'W',
 };
 
 interface VisualizationBoardProps {
@@ -24,7 +38,7 @@ export function VisualizationBoard({
   return (
     <section className="panel panel--board">
       <div className="panel__titlebar">
-        <span className="panel__title">Optimize</span>
+        <span className="panel__title">Lo-fi Defragger</span>
         <span className="panel__meta">F1=Help</span>
       </div>
       <div className="board-shell">
@@ -39,6 +53,7 @@ export function VisualizationBoard({
                 key={`lane-${laneIndex}`}
                 aria-hidden="true"
                 className={CELL_CLASS_NAMES[laneState]}
+                data-token={CELL_TOKENS[laneState]}
               />
             );
           })}
@@ -52,6 +67,7 @@ export function VisualizationBoard({
               key={`field-${cellIndex}`}
               aria-hidden="true"
               className={CELL_CLASS_NAMES[cellState]}
+              data-token={CELL_TOKENS[cellState]}
             />
           ))}
         </div>

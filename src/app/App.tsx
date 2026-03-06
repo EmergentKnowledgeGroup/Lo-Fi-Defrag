@@ -42,6 +42,7 @@ function AppShell({
     beatSyncEnabled,
     effectiveBpm,
     energyLevel: player.energyLevel,
+    isRunning: player.isPlaying,
     speed,
   });
 
@@ -95,78 +96,70 @@ function AppShell({
 
   return (
     <div className="app-shell" data-skin={skinId}>
-      <header className="app-shell__header">
-        <div>
-          <p className="app-shell__eyebrow">Lo-fi Defragger</p>
-          <h1 className="app-shell__title">{selectedSkin.label}</h1>
-          <p className="app-shell__subtitle">{selectedSkin.description}</p>
-        </div>
-        <div className="app-shell__badge">{selectedSkin.tone}</div>
-      </header>
-
       <main className="app-shell__main">
         <VisualizationBoard state={simulation.state} />
-        <div className="dashboard-grid">
-          <StatusPanel
-            beatSyncEnabled={beatSyncEnabled}
-            bpmStatus={player.bpmStatus}
-            currentLaneFill={currentLaneFill}
-            currentPass={simulation.state.passNumber}
-            effectiveBpm={effectiveBpm}
-            elapsedSeconds={simulation.state.elapsedMs / 1000}
-            estimatedBpm={player.estimatedBpm}
-            isFullscreen={isFullscreen}
-            manualBpm={manualBpm}
-            onBeatSyncChange={setBeatSyncEnabled}
-            onManualBpmChange={(value) => setManualBpm(normalizeManualBpm(value))}
-            onSkinChange={setSkinId}
-            onSpeedChange={setSpeed}
-            onToggleFullscreen={() => {
-              void window.lofiDefragger.toggleFullscreen().then((value) => {
-                setIsFullscreen(value);
-              });
-            }}
-            rowsCompletedInPass={simulation.rowsCompletedInPass}
-            rowsPerPass={DEFAULT_ROWS_PER_PASS}
-            selectedSkinId={skinId}
-            speed={speed}
-            statusCluster={simulation.state.clusterNumber}
-          />
-          <TransportPanel
-            analysisEnergy={player.energyLevel}
-            bpmStatus={player.bpmStatus}
-            currentTrackArtist={currentTrackArtist}
-            currentTrackMissing={currentTrackMissing}
-            currentTrackTitle={currentTrackTitle}
-            duration={player.trackDuration}
-            isMuted={player.isMuted}
-            isPlaying={player.isPlaying}
-            onImportFiles={() => {
-              void player.importAudio('files');
-            }}
-            onImportFolder={() => {
-              void player.importAudio('folder');
-            }}
-            onMuteToggle={() => player.setMuted(!player.isMuted)}
-            onNext={player.skipNext}
-            onPlayPause={player.togglePlayPause}
-            onPrevious={player.skipPrevious}
-            onRepeatChange={player.setRepeatMode}
-            onSeek={player.seekTo}
-            onVolumeChange={player.setVolume}
-            playbackPosition={player.playbackPosition}
-            repeatMode={player.repeatMode}
-            volume={player.volume}
-          />
-          <PlaylistPanel
-            currentTrackId={player.currentTrackId}
-            onMoveDown={player.moveTrackDown}
-            onMoveUp={player.moveTrackUp}
-            onRemove={player.removeTrack}
-            onSelect={(trackId) => player.selectTrack(trackId, { autoplay: true })}
-            playlist={player.playlist}
-          />
-        </div>
+        <StatusPanel
+          beatSyncEnabled={beatSyncEnabled}
+          bpmStatus={player.bpmStatus}
+          currentLaneCapacity={simulation.state.columns}
+          currentLaneFill={currentLaneFill}
+          currentPass={simulation.state.passNumber}
+          defragProgress={simulation.rowsCompletedInPass / DEFAULT_ROWS_PER_PASS}
+          effectiveBpm={effectiveBpm}
+          elapsedSeconds={simulation.state.elapsedMs / 1000}
+          estimatedBpm={player.estimatedBpm}
+          isFullscreen={isFullscreen}
+          manualBpm={manualBpm}
+          onBeatSyncChange={setBeatSyncEnabled}
+          onManualBpmChange={(value) => setManualBpm(normalizeManualBpm(value))}
+          onSkinChange={setSkinId}
+          onSpeedChange={setSpeed}
+          onToggleFullscreen={() => {
+            void window.lofiDefragger.toggleFullscreen().then((value) => {
+              setIsFullscreen(value);
+            });
+          }}
+          rowsCompletedInPass={simulation.rowsCompletedInPass}
+          rowsPerPass={DEFAULT_ROWS_PER_PASS}
+          selectedSkinId={skinId}
+          speed={speed}
+          statusCluster={simulation.state.clusterNumber}
+        />
+        <TransportPanel
+          analysisEnergy={player.energyLevel}
+          bpmStatus={player.bpmStatus}
+          currentTrackArtist={currentTrackArtist}
+          currentTrackMissing={currentTrackMissing}
+          currentTrackTitle={currentTrackTitle}
+          duration={player.trackDuration}
+          isMuted={player.isMuted}
+          isPlaying={player.isPlaying}
+          isTrackLoaded={Boolean(player.currentTrack)}
+          onImportFiles={() => {
+            void player.importAudio('files');
+          }}
+          onImportFolder={() => {
+            void player.importAudio('folder');
+          }}
+          onMuteToggle={() => player.setMuted(!player.isMuted)}
+          onNext={player.skipNext}
+          onPlayPause={player.togglePlayPause}
+          onPrevious={player.skipPrevious}
+          onRepeatChange={player.setRepeatMode}
+          onSeek={player.seekTo}
+          onVolumeChange={player.setVolume}
+          playbackPosition={player.playbackPosition}
+          repeatMode={player.repeatMode}
+          volume={player.volume}
+        />
+        <PlaylistPanel
+          currentTrackId={player.currentTrackId}
+          onMoveDown={player.moveTrackDown}
+          onMoveUp={player.moveTrackUp}
+          onRemove={player.removeTrack}
+          onSelect={(trackId) => player.selectTrack(trackId, { autoplay: true })}
+          playlist={player.playlist}
+        />
       </main>
 
       <audio
