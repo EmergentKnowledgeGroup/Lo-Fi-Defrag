@@ -1,0 +1,47 @@
+{
+  "schema": "impressio.context_checkpoint.v1",
+  "captured_at": "2026-03-06T13:12:54.868177+00:00",
+  "repo_root": "/Users/domusanimae/Documents/Lo-fi-defragger",
+  "branch": "codex/lofi-defragger",
+  "head_short": "58d013b",
+  "step": "distribution-post-green",
+  "note": "Windows EXE workflow and non-Windows Python launcher are implemented and locally validated.",
+  "next_cmd": "git add . && git commit -m \"feat: add distribution helpers\"",
+  "status": {
+    "staged": [],
+    "modified": [
+      "package.json",
+      "runtime/checkpoints/LATEST.json",
+      "runtime/checkpoints/LATEST.md"
+    ],
+    "untracked": [
+      ".github/",
+      "DISTRIBUTION.md",
+      "build-windows.bat",
+      "launch.py",
+      "runtime/checkpoints/context_checkpoint_20260306T120929Z_pr-blocked.json",
+      "runtime/checkpoints/context_checkpoint_20260306T120929Z_pr-blocked.md",
+      "runtime/checkpoints/context_checkpoint_20260306T130939Z_distribution-phase-start.json",
+      "runtime/checkpoints/context_checkpoint_20260306T130939Z_distribution-phase-start.md"
+    ],
+    "conflicted": [],
+    "dirty": true
+  },
+  "changed_files": {
+    "working_tree": [
+      "package.json",
+      "runtime/checkpoints/LATEST.json",
+      "runtime/checkpoints/LATEST.md"
+    ],
+    "staged": []
+  },
+  "recent_commits": [
+    "58d013b feat: build lo-fi defragger desktop app",
+    "2216016 chore: initialize repository"
+  ],
+  "checklist": [
+    "Run git status -sb and verify branch/head.",
+    "Open diff for changed files listed in checkpoint.",
+    "Resume from step + next_cmd, then write a new checkpoint after each major edit block."
+  ]
+}

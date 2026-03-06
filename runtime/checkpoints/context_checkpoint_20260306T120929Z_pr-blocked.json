@@ -1,0 +1,30 @@
+{
+  "schema": "impressio.context_checkpoint.v1",
+  "captured_at": "2026-03-06T12:09:29.038426+00:00",
+  "repo_root": "/Users/domusanimae/Documents/Lo-fi-defragger",
+  "branch": "codex/lofi-defragger",
+  "head_short": "58d013b",
+  "step": "pr-blocked",
+  "note": "Local commit is complete, but PR creation is blocked because no git remote is configured for the repository.",
+  "next_cmd": "git remote add origin <repo-url> && git push -u origin codex/lofi-defragger",
+  "status": {
+    "staged": [],
+    "modified": [],
+    "untracked": [],
+    "conflicted": [],
+    "dirty": false
+  },
+  "changed_files": {
+    "working_tree": [],
+    "staged": []
+  },
+  "recent_commits": [
+    "58d013b feat: build lo-fi defragger desktop app",
+    "2216016 chore: initialize repository"
+  ],
+  "checklist": [
+    "Run git status -sb and verify branch/head.",
+    "Open diff for changed files listed in checkpoint.",
+    "Resume from step + next_cmd, then write a new checkpoint after each major edit block."
+  ]
+}

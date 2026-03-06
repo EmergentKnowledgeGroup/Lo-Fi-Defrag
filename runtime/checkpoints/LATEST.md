@@ -1,13 +1,15 @@
 # Checkpoint
 
-- `step`: `post-green`
-- `note`: Local gates are green for the Electron + React ambient defragger app. Next step is committing the work; PR and CodeRabbit steps are blocked until a git remote exists.
+- `step`: `distribution-post-green`
+- `note`: Windows EXE distribution helpers and the non-Windows Python launcher are implemented and locally validated.
 - `branch`: `codex/lofi-defragger`
-- `head`: `2216016f82a0ae68cfa59a15a3f8e0f037f50cd7`
-- `next_cmd`: `git add . && git commit -m "feat: build lo-fi defragger desktop app"`
+- `head`: `58d013b116ea0e787b8a5f26d63bbf44223a764e`
+- `next_cmd`: `git add . && git commit -m "feat: add distribution helpers"`
 
 ## Validations
 
+- `python3 -m py_compile launch.py` - passed
+- `python3 launch.py --dry-run` - passed
 - `npm run typecheck` - passed
 - `npm run lint` - passed
 - `npm run test` - passed
