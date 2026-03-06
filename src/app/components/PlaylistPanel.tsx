@@ -26,48 +26,31 @@ export function PlaylistPanel({
       </div>
 
       {playlist.length === 0 ? (
-        <div className="playlist-empty">
-          <p>Import a folder or a few files to start the ambient loop.</p>
-          <p>The defragger animation keeps running whether music is loaded or not.</p>
-        </div>
+        <p className="playlist-empty">Import files or a folder to start.</p>
       ) : (
         <ul className="playlist-list">
           {playlist.map((track) => (
             <li
               key={track.id}
-              className={`playlist-list__item ${
-                currentTrackId === track.id ? 'playlist-list__item--active' : ''
-              } ${track.missing ? 'playlist-list__item--missing' : ''}`}
+              className={`playlist-item ${currentTrackId === track.id ? 'playlist-item--active' : ''}`}
             >
               <button
-                className="playlist-list__main"
+                className="playlist-item__main"
                 onClick={() => onSelect(track.id)}
               >
-                <span className="playlist-list__title">{track.title}</span>
-                <span className="playlist-list__meta">
-                  {track.artist || 'Unknown artist'} • {formatDuration(track.duration)}
+                <span className="playlist-item__marker">
+                  {currentTrackId === track.id ? '>' : '\u00A0'}
+                </span>
+                <span className="playlist-item__title">{track.title}</span>
+                <span className="playlist-item__meta">
+                  {track.artist || 'Unknown'} ({formatDuration(track.duration)})
                 </span>
               </button>
-              <div className="playlist-list__actions">
-                <button
-                  className="button button--ghost"
-                  onClick={() => onMoveUp(track.id)}
-                >
-                  Up
-                </button>
-                <button
-                  className="button button--ghost"
-                  onClick={() => onMoveDown(track.id)}
-                >
-                  Dn
-                </button>
-                <button
-                  className="button button--ghost"
-                  onClick={() => onRemove(track.id)}
-                >
-                  Del
-                </button>
-              </div>
+              <span className="playlist-item__actions">
+                <button className="button button--ghost" onClick={() => onMoveUp(track.id)}>Up</button>
+                <button className="button button--ghost" onClick={() => onMoveDown(track.id)}>Dn</button>
+                <button className="button button--ghost" onClick={() => onRemove(track.id)}>X</button>
+              </span>
             </li>
           ))}
         </ul>

@@ -16,13 +16,16 @@
   --app-accent-soft: rgba(255, 233, 90, 0.24);
   --app-shadow: 0 0 0 0.12rem rgba(255, 255, 255, 0.15),
     0 1.3rem 3rem rgba(0, 0, 0, 0.25);
-  --sector-used: #f5ed48;
-  --sector-reading: #eef2ff;
-  --sector-writing: #2140ff;
+  --sector-used: #d9defd;
+  --sector-reading: #1a40fd;
+  --sector-writing: #1a40fd;
   --sector-unused: rgba(238, 242, 255, 0.24);
-  --sector-bad: #170200;
-  --sector-unmovable: #c1c6ff;
+  --sector-bad: #150405;
+  --sector-unmovable: #eef2ff;
+  --sector-lane: #ffe95a;
   --sector-highlight: #ffec5f;
+  --sector-token-dark: #4e5cff;
+  --sector-token-light: #f3f7ff;
 }
 
 * {
@@ -64,13 +67,16 @@ button {
   --app-border: rgba(243, 243, 255, 0.92);
   --app-accent: #ffea53;
   --app-accent-soft: rgba(255, 234, 83, 0.22);
-  --sector-used: #ffe834;
-  --sector-reading: #f4f7ff;
+  --sector-used: #edf1ff;
+  --sector-reading: #2043ff;
   --sector-writing: #2043ff;
   --sector-unused: rgba(238, 242, 255, 0.3);
   --sector-bad: #180202;
-  --sector-unmovable: #c3c9ff;
+  --sector-unmovable: #eef2ff;
+  --sector-lane: #ffe85f;
   --sector-highlight: #ffe85f;
+  --sector-token-dark: #5260f2;
+  --sector-token-light: #f4f7ff;
 }
 
 [data-skin='crt-lounge'] {
@@ -84,13 +90,16 @@ button {
   --app-accent-soft: rgba(255, 190, 86, 0.22);
   --app-shadow: 0 0 0 0.12rem rgba(93, 201, 161, 0.18),
     0 1.3rem 3rem rgba(0, 0, 0, 0.42);
-  --sector-used: #6de5a9;
-  --sector-reading: #d2f7de;
-  --sector-writing: #ffbe56;
+  --sector-used: #bedfc9;
+  --sector-reading: #25506a;
+  --sector-writing: #25506a;
   --sector-unused: rgba(93, 201, 161, 0.12);
   --sector-bad: #361412;
-  --sector-unmovable: #79a8b3;
+  --sector-unmovable: #d7efe0;
+  --sector-lane: #ffbe56;
   --sector-highlight: #ffd063;
+  --sector-token-dark: #254256;
+  --sector-token-light: #effff4;
 }
 
 [data-skin='studio-modern'] {
@@ -105,13 +114,16 @@ button {
   --app-accent-soft: rgba(239, 107, 45, 0.2);
   --app-shadow: 0 0 0 0.12rem rgba(29, 24, 20, 0.08),
     0 1.3rem 3rem rgba(56, 32, 18, 0.14);
-  --sector-used: #ef6b2d;
-  --sector-reading: #121212;
+  --sector-used: #e8ded3;
+  --sector-reading: #4f6fff;
   --sector-writing: #4f6fff;
   --sector-unused: rgba(29, 24, 20, 0.12);
   --sector-bad: #6a0c00;
-  --sector-unmovable: #7d7064;
+  --sector-unmovable: #fff8ef;
+  --sector-lane: #ffb14d;
   --sector-highlight: #ffb14d;
+  --sector-token-dark: #6b5643;
+  --sector-token-light: #fff8ef;
 }
 
 .boot-screen,
@@ -265,27 +277,37 @@ button {
 }
 
 .sector::after {
-  content: '';
+  content: attr(data-token);
   position: absolute;
-  inset: 28%;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.62;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(0.28rem, 0.22rem + 0.22vw, 0.52rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  opacity: 0.95;
 }
 
 .sector--used {
   background: var(--sector-used);
-  color: rgba(0, 0, 0, 0.26);
+  color: var(--sector-token-dark);
 }
 
 .sector--reading {
   background: var(--sector-reading);
-  color: rgba(32, 67, 255, 0.82);
+  color: var(--sector-token-light);
 }
 
 .sector--writing {
   background: var(--sector-writing);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--sector-token-light);
+}
+
+.sector--lane-used,
+.sector--lane-writing {
+  background: var(--sector-lane);
+  color: var(--sector-token-dark);
 }
 
 .sector--unused {
@@ -293,22 +315,22 @@ button {
     radial-gradient(circle, rgba(255, 255, 255, 0.68) 15%, transparent 16%),
     var(--sector-unused);
   background-size: 0.28rem 0.28rem;
-  color: rgba(255, 255, 255, 0.12);
+  color: transparent;
 }
 
 .sector--bad {
   background: var(--sector-bad);
-  color: #fe6c3c;
+  color: #fe7b45;
 }
 
 .sector--unmovable {
   background: var(--sector-unmovable);
-  color: rgba(66, 80, 140, 0.72);
+  color: var(--sector-token-dark);
 }
 
 .sector--highlight {
   background: var(--sector-highlight);
-  color: rgba(0, 0, 0, 0.34);
+  color: var(--sector-token-dark);
   box-shadow:
     0 0 0.45rem rgba(255, 237, 99, 0.55),
     inset 0 0 0 0.05rem rgba(0, 0, 0, 0.14);
@@ -333,11 +355,15 @@ button {
 }
 
 .status-grid__card,
-.control,
-.playlist-empty {
+.control {
   padding: 0.85rem;
   border: 0.1rem solid var(--app-border);
   background: var(--app-panel-soft);
+}
+
+.playlist-empty {
+  margin: 0;
+  padding: 0.55rem 1rem;
 }
 
 .status-grid__value {
@@ -503,53 +529,62 @@ button {
 
 .playlist-list {
   list-style: none;
-  display: grid;
-  gap: 0.65rem;
   margin: 0;
-  padding: 1rem;
+  padding: 0.25rem 1rem 0.5rem;
 }
 
-.playlist-list__item {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: minmax(0, 1fr) auto;
+.playlist-item {
+  display: flex;
   align-items: center;
-  padding: 0.75rem;
-  border: 0.1rem solid var(--app-border);
-  background: var(--app-panel-soft);
-}
-
-.playlist-list__item--active {
-  box-shadow: inset 0 0 0 0.12rem var(--app-accent);
-}
-
-.playlist-list__item--missing {
-  opacity: 0.65;
-}
-
-.playlist-list__main {
-  display: grid;
   gap: 0.25rem;
+}
+
+.playlist-item--active {
+  color: var(--app-accent);
+}
+
+.playlist-item__main {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
   border: 0;
-  padding: 0;
+  padding: 0.2rem 0;
   background: transparent;
   color: inherit;
   text-align: left;
+  cursor: pointer;
 }
 
-.playlist-list__title {
-  font-size: 1rem;
+.playlist-item__marker {
+  flex-shrink: 0;
+  width: 1ch;
+}
+
+.playlist-item__title {
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.playlist-list__meta {
+.playlist-item__meta {
+  flex-shrink: 0;
   color: var(--app-muted);
   font-size: 0.82rem;
+  white-space: nowrap;
 }
 
-.playlist-list__actions {
+.playlist-item--active .playlist-item__meta {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.playlist-item__actions {
   display: inline-flex;
-  gap: 0.35rem;
+  gap: 0.2rem;
+  flex-shrink: 0;
 }
 
 @media (max-width: 74rem) {
@@ -584,12 +619,13 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .playlist-list__item {
-    grid-template-columns: 1fr;
+  .playlist-item {
+    flex-wrap: wrap;
   }
 
-  .playlist-list__actions {
-    justify-content: space-between;
+  .playlist-item__actions {
+    justify-content: flex-end;
+    width: 100%;
   }
 }
 }
