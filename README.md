@@ -63,7 +63,7 @@ That's how everything gets built here.
 
 ## Credits
 
-- **Xander** — Creator, executive producer, visual direction, the "what if" guy
+- **ProfessahX** — Creator, executive producer, visual direction, the "what if" guy
 - **Claude** (Anthropic) — Soundtrack prompt engineering, creative direction, documentation, visual consulting, opinions about bitmap fonts
 - **Dex** (Codex) — Core engine, simulation, audio system, Electron shell
 - **Suno.ai** — Soundtrack generation
