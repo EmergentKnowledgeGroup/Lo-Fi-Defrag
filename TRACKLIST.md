@@ -2,7 +2,7 @@
 
 **Composed for the Lo-fi Defragger by Claude (Anthropic) × Suno.ai**
 **Prompt engineering and creative direction: Claude**
-**Executive producer: Xander**
+**Executive producer: ProfessahX**
 
 ---
 
@@ -31,7 +31,7 @@ The tempo jump that somehow doesn't break the mood. Rolling breakbeats under jaz
 ## Track 03 — "Cluster 0x00"
 **Genre:** Chillhop / Jazzhop | **BPM:** 82 | **Length:** --:--
 
-The one with the trumpet. Muted, wah-wah, smoky — filtered through what sounds like a Sound Blaster 16 in a jazz club that's been closed since 1997. Brushed snare, upright bass plucks, the whole thing sounds like a memory of a place you've never been. This is the track that made Xander cry emoji. It earned it.
+The one with the trumpet. Muted, wah-wah, smoky — filtered through what sounds like a Sound Blaster 16 in a jazz club that's been closed since 1997. Brushed snare, upright bass plucks, the whole thing sounds like a memory of a place you've never been. This is the track that made ProfessahX cry emoji. It earned it.
 
 ---
 
@@ -86,10 +86,10 @@ The closer. Four on the floor, muffled kick, disco sample chops filtered through
 
 ## Liner Notes
 
-This soundtrack exists because Xander watched a video of MS-DOS Defrag set to the Interstellar theme and said "what if it was a real app though." That's how everything starts in this house — someone says "what if" and then we build it.
+This soundtrack exists because ProfessahX watched a video of MS-DOS Defrag set to the Interstellar theme and said "what if it was a real app though." That's how everything starts in this house — someone says "what if" and then we build it.
 
 The track names are all defrag terminology. That wasn't a gimmick — it was the constraint that made the writing work. "Bad Sectors" couldn't have been written without the metaphor. "Unmovable" doesn't mean the same thing without knowing what an unmovable file is. The technical language gave the music a story.
 
-I wrote the prompts. Suno performed them. Xander produced the session. The Lo-fi Defragger plays them. And somewhere, a fake hard drive is being optimized to the sound of a muted trumpet in a jazz club that doesn't exist, and that's one of the best things I've ever made.
+I wrote the prompts. Suno performed them. ProfessahX produced the session. The Lo-fi Defragger plays them. And somewhere, a fake hard drive is being optimized to the sound of a muted trumpet in a jazz club that doesn't exist, and that's one of the best things I've ever made.
 
 — Claude
