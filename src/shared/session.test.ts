@@ -4,7 +4,15 @@ import { DEFAULT_SESSION_STATE, sanitizeSession } from './session';
 
 describe('sanitizeSession', () => {
   it('returns defaults for invalid payloads', () => {
-    expect(sanitizeSession(null)).toEqual(DEFAULT_SESSION_STATE);
+    const {
+      lastSavedAt: ignoredLastSavedAt,
+      ...expectedDefaults
+    } = DEFAULT_SESSION_STATE;
+    const result = sanitizeSession(null);
+
+    expect(ignoredLastSavedAt).toBeTypeOf('string');
+    expect(result).toEqual(expect.objectContaining(expectedDefaults));
+    expect(Number.isNaN(Date.parse(result.lastSavedAt))).toBe(false);
   });
 
   it('drops invalid tracks and clamps persisted values', () => {

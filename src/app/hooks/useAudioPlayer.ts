@@ -168,7 +168,8 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
       audio.currentTime = position;
       setPlaybackPosition(position);
       if (options.autoplay) {
-        void audio.play().catch(() => {
+        void audio.play().catch((error) => {
+          console.error('Audio playback failed after selecting the current track.', error);
           setIsPlaying(false);
         });
       }
@@ -199,7 +200,8 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
     try {
       await ensureAnalysisGraph();
       await audio.play();
-    } catch {
+    } catch (error) {
+      console.error('Audio playback failed.', error);
       setIsPlaying(false);
     }
   }
@@ -265,6 +267,7 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
 
   function removeTrack(trackId: string): void {
     const nextPlaylist = removePlaylistItem(playlistRef.current, trackId);
+    delete bpmCacheRef.current[trackId];
     setPlaylist(nextPlaylist);
     if (trackId !== currentTrackIdRef.current) {
       return;

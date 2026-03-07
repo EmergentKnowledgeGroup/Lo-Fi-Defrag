@@ -52,6 +52,11 @@ export function TransportPanel({
   const canSeek = duration > 0;
   const playbackProgress = canSeek ? playbackPosition / duration : 0;
   const isBoardRunning = isPlaying || isTestMode;
+  const handlePlayPause = () => {
+    void onPlayPause().catch((error) => {
+      console.error('Play/pause action failed.', error);
+    });
+  };
   const statusMessage = currentTrackMissing
     ? 'Current file is missing. Pick another track or re-import the source.'
     : isPlaying
@@ -96,7 +101,7 @@ export function TransportPanel({
         <button
           type="button"
           className="button button--primary"
-          onClick={() => void onPlayPause()}
+          onClick={handlePlayPause}
         >
           {isPlaying ? 'Pause' : 'Play'}
         </button>

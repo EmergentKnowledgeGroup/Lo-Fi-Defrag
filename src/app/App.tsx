@@ -240,6 +240,16 @@ function AppShell({
   const currentTrackTitle = player.currentTrack?.title ?? 'No track loaded';
   const currentTrackArtist = player.currentTrack?.artist ?? null;
   const currentTrackMissing = Boolean(player.currentTrack?.missing);
+  const handleToggleFullscreen = () => {
+    void window.lofiDefragger
+      .toggleFullscreen()
+      .then((value) => {
+        setIsFullscreen(value);
+      })
+      .catch((error) => {
+        console.error('Failed to toggle fullscreen.', error);
+      });
+  };
   const closePlaylist = () => {
     setIsPlaylistOpen(false);
     setPlaylistOutsideClicks(0);
@@ -273,11 +283,7 @@ function AppShell({
             onManualBpmChange={(value) => setManualBpm(normalizeManualBpm(value))}
             onSkinChange={setSkinId}
             onSpeedChange={setSpeed}
-            onToggleFullscreen={() => {
-              void window.lofiDefragger.toggleFullscreen().then((value) => {
-                setIsFullscreen(value);
-              });
-            }}
+            onToggleFullscreen={handleToggleFullscreen}
             selectedSkinId={skinId}
             speed={speed}
             statusCluster={simulation.state.clusterNumber}

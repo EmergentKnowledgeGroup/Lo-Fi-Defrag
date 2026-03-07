@@ -1,4 +1,10 @@
-export type SkinId = 'classic-ms' | 'crt-lounge' | 'studio-modern';
+export const VALID_SKIN_IDS = [
+  'classic-ms',
+  'crt-lounge',
+  'studio-modern',
+] as const;
+
+export type SkinId = (typeof VALID_SKIN_IDS)[number];
 export type RepeatMode = 'off' | 'one' | 'all';
 export type SectorState =
   | 'unused'

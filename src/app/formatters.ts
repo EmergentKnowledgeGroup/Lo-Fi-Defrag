@@ -10,7 +10,7 @@ export function formatClock(totalSeconds: number): string {
 }
 
 export function formatDuration(totalSeconds: number | null): string {
-  if (!totalSeconds || !Number.isFinite(totalSeconds)) {
+  if (totalSeconds === null || !Number.isFinite(totalSeconds)) {
     return '--:--';
   }
 

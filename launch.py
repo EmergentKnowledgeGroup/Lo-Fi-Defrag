@@ -14,6 +14,7 @@ from typing import List, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parent
 PRODUCT_NAME = "Lo-fi Defragger"
+PACKAGED_LINUX_BINARY = os.environ.get("LOFI_DEFRAGGER_PACKAGED_BINARY", PRODUCT_NAME)
 DEV_COMMAND = ["npm", "run", "dev"]
 
 
@@ -79,6 +80,12 @@ def find_packaged_command() -> Optional[List[str]]:
                 for child in directory.iterdir()
                 if child.is_file() and os.access(child, os.X_OK)
             ]
+            named_candidate = next(
+                (child for child in candidates if child.name == PACKAGED_LINUX_BINARY),
+                None,
+            )
+            if named_candidate:
+                return [str(named_candidate)]
             if candidates:
                 return [str(candidates[0])]
 

@@ -4,7 +4,9 @@ import { AsciiBar } from './AsciiBar';
 
 describe('AsciiBar', () => {
   it('renders correct number of tiles', () => {
-    const { container, getByRole } = render(<AsciiBar value={0.5} tiles={10} />);
+    const { container, getByRole } = render(
+      <AsciiBar value={0.5} tiles={10} label="Progress" />,
+    );
     const tiles = container.querySelectorAll('[class^="ascii-bar__tile"]');
 
     expect(getByRole('meter')).toHaveAttribute('aria-valuenow', '50');
@@ -12,7 +14,9 @@ describe('AsciiBar', () => {
   });
 
   it('fills correct number of tiles based on value', () => {
-    const { container } = render(<AsciiBar value={0.3} tiles={10} />);
+    const { container } = render(
+      <AsciiBar value={0.3} tiles={10} label="Progress" />,
+    );
     const filled = container.querySelectorAll('.ascii-bar__tile--filled');
     const empty = container.querySelectorAll('.ascii-bar__tile--empty');
     expect(filled.length).toBe(3);
@@ -20,7 +24,9 @@ describe('AsciiBar', () => {
   });
 
   it('renders highlight tile at fill boundary', () => {
-    const { container } = render(<AsciiBar value={0.5} tiles={10} showHead />);
+    const { container } = render(
+      <AsciiBar value={0.5} tiles={10} showHead label="Progress" />,
+    );
     const head = container.querySelectorAll('.ascii-bar__tile--head');
     expect(head.length).toBe(1);
   });
@@ -28,7 +34,12 @@ describe('AsciiBar', () => {
   it('calls onChange when the bar is clicked', () => {
     const handleChange = vi.fn();
     const { getByRole } = render(
-      <AsciiBar value={0.25} tiles={10} onChange={handleChange} />,
+      <AsciiBar
+        value={0.25}
+        tiles={10}
+        onChange={handleChange}
+        label="Seek"
+      />,
     );
 
     const bar = getByRole('slider');
@@ -53,7 +64,7 @@ describe('AsciiBar', () => {
   it('supports keyboard updates when interactive', () => {
     const handleChange = vi.fn();
     const { getByRole } = render(
-      <AsciiBar value={0.5} tiles={10} onChange={handleChange} />,
+      <AsciiBar value={0.5} tiles={10} onChange={handleChange} label="Seek" />,
     );
 
     fireEvent.keyDown(getByRole('slider'), { key: 'ArrowRight' });
@@ -61,7 +72,9 @@ describe('AsciiBar', () => {
   });
 
   it('clamps value between 0 and 1', () => {
-    const { container } = render(<AsciiBar value={1.5} tiles={10} />);
+    const { container } = render(
+      <AsciiBar value={1.5} tiles={10} label="Progress" />,
+    );
     const filled = container.querySelectorAll('.ascii-bar__tile--filled');
     expect(filled.length).toBe(10);
   });

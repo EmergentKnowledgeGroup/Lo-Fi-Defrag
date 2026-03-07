@@ -1,5 +1,5 @@
 import { constants as fsConstants } from 'node:fs';
-import { access, readdir } from 'node:fs/promises';
+import { access, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -17,13 +17,25 @@ async function exists(filePath: string): Promise<boolean> {
   }
 }
 
-async function walkDirectory(rootPath: string): Promise<string[]> {
+async function walkDirectory(
+  rootPath: string,
+  visited = new Set<string>(),
+): Promise<string[]> {
+  const canonicalPath = await realpath(rootPath).catch(() => rootPath);
+  if (visited.has(canonicalPath)) {
+    return [];
+  }
+  visited.add(canonicalPath);
+
   const entries = await readdir(rootPath, { withFileTypes: true });
   const audioFiles = await Promise.all(
     entries.map(async (entry) => {
       const resolvedPath = path.join(rootPath, entry.name);
+      if (entry.isSymbolicLink()) {
+        return [];
+      }
       if (entry.isDirectory()) {
-        return walkDirectory(resolvedPath);
+        return walkDirectory(resolvedPath, visited);
       }
       return isSupportedAudioPath(resolvedPath) ? [resolvedPath] : [];
     }),

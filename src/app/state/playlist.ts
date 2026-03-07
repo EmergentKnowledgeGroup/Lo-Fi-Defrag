@@ -73,10 +73,8 @@ export function findNextPlayableTrackId(
   }
 
   const currentIndex = findTrackIndex(playlist, currentTrackId);
-  const orderedIndexes = playlist.map((_track, index) => index);
-
   const startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-  for (let index = startIndex; index < orderedIndexes.length; index += 1) {
+  for (let index = startIndex; index < playlist.length; index += 1) {
     if (!playlist[index].missing) {
       return playlist[index].id;
     }

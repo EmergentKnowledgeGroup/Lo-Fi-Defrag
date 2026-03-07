@@ -12,14 +12,13 @@
 
 :root {
   color-scheme: dark;
-  font-family: 'Perfect DOS VGA 437', 'Fixedsys', 'Terminal', 'Consolas', monospace;
+  font-family: 'Perfect DOS VGA 437', Fixedsys, Terminal, Consolas, monospace;
   line-height: 1;
   font-weight: normal;
   font-size: 16px;
   text-rendering: optimizeSpeed;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
-  font-smooth: never;
   --app-background: #0000aa;
   --app-panel: #0000cc;
   --app-panel-soft: #0000bb;

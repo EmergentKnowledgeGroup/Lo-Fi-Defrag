@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, rename, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 import { app } from 'electron';
@@ -39,6 +39,21 @@ export async function saveSessionState(
     lastSavedAt: new Date().toISOString(),
   });
   const sessionPath = getSessionPath();
+  const tempPath = `${sessionPath}.tmp`;
+  const contents = JSON.stringify(sanitized, null, 2);
   await mkdir(path.dirname(sessionPath), { recursive: true });
-  await writeFile(sessionPath, JSON.stringify(sanitized, null, 2), 'utf8');
+  let fileHandle: Awaited<ReturnType<typeof open>> | null = null;
+
+  try {
+    fileHandle = await open(tempPath, 'w');
+    await fileHandle.writeFile(contents, 'utf8');
+    await fileHandle.sync();
+    await fileHandle.close();
+    fileHandle = null;
+    await rename(tempPath, sessionPath);
+  } catch (error) {
+    await fileHandle?.close().catch(() => undefined);
+    await unlink(tempPath).catch(() => undefined);
+    throw error;
+  }
 }

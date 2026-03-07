@@ -1,4 +1,10 @@
-import type { PersistedAppState, PlaylistItem, RepeatMode, SkinId } from './types';
+import {
+  VALID_SKIN_IDS,
+  type PersistedAppState,
+  type PlaylistItem,
+  type RepeatMode,
+  type SkinId,
+} from './types';
 
 export const DEFAULT_ROWS_PER_PASS = 12;
 
@@ -26,11 +32,7 @@ function isRepeatMode(value: unknown): value is RepeatMode {
 }
 
 function isSkinId(value: unknown): value is SkinId {
-  return (
-    value === 'classic-ms' ||
-    value === 'crt-lounge' ||
-    value === 'studio-modern'
-  );
+  return typeof value === 'string' && VALID_SKIN_IDS.includes(value as SkinId);
 }
 
 function sanitizePlaylistItem(item: unknown): PlaylistItem | null {
