@@ -90,3 +90,9 @@ typings/
 
 # Electron-Forge
 out/
+
+# Local workflow artifacts
+runtime/checkpoints/
+
+# Local screenshot drops in repo root
+/*.png
