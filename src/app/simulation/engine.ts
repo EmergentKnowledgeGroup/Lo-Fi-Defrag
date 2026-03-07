@@ -3,13 +3,18 @@ import type {
   CompletionState,
   LaneSlot,
   SectorState,
+  SimulationBoardConfig,
   SimulationConfig,
   SimulationState,
   SimulationTickResult,
 } from '../../shared/types';
 
 type RandomSource = () => number;
-type LaneVisualState = SectorState | 'highlight';
+export type LaneVisualState =
+  | 'unused'
+  | 'lane-used'
+  | 'lane-writing'
+  | 'highlight';
 
 interface MotionProfile {
   dualMoveChance: number;
@@ -20,35 +25,64 @@ interface MotionProfile {
   writingMs: number;
 }
 
+const DEFAULT_BOARD_CONFIG: SimulationBoardConfig = {
+  fieldBadRatio: 0.01,
+  fieldUnmovableRatio: 0.015,
+  fieldUsedRatio: 0.28,
+  laneSeedUsedRatio: 0,
+  minimumFieldUsedRatio: 0.18,
+  reshuffleMutationRate: 0.16,
+  reshuffleProtectedMutationRate: 0.04,
+  reshuffleUsedTopUpChance: 0.24,
+} as const;
+
+function getBoardConfig(
+  config: Pick<SimulationConfig, 'boardConfig'>,
+): SimulationBoardConfig {
+  return config.boardConfig ?? DEFAULT_BOARD_CONFIG;
+}
+
 function createClusterNumber(random: RandomSource): number {
   return 100 + Math.floor(random() * 900);
 }
 
-function createLane(columns: number): LaneSlot[] {
-  return Array.from({ length: columns }, () => ({ state: 'unused' }));
+function createLane(
+  columns: number,
+  random: RandomSource,
+  boardConfig: SimulationBoardConfig,
+): LaneSlot[] {
+  return Array.from({ length: columns }, () => ({
+    state: random() < boardConfig.laneSeedUsedRatio ? 'used' : 'unused',
+  }));
 }
 
-function sampleFieldState(random: RandomSource): SectorState {
+function sampleFieldState(
+  random: RandomSource,
+  boardConfig: SimulationBoardConfig,
+): SectorState {
   const roll = random();
-  if (roll < 0.67) {
+  if (roll < boardConfig.fieldUsedRatio) {
     return 'used';
   }
-  if (roll < 0.92) {
-    return 'unused';
+  if (roll > 1 - boardConfig.fieldBadRatio) {
+    return 'bad';
   }
-  if (roll < 0.975) {
+  if (roll > 1 - (boardConfig.fieldBadRatio + boardConfig.fieldUnmovableRatio)) {
     return 'unmovable';
   }
-  return 'bad';
+  return 'unused';
 }
 
 function createField(
   columns: number,
   fieldRows: number,
   random: RandomSource,
+  boardConfig: SimulationBoardConfig,
 ): SectorState[] {
   const cellCount = columns * fieldRows;
-  return Array.from({ length: cellCount }, () => sampleFieldState(random));
+  return Array.from({ length: cellCount }, () =>
+    sampleFieldState(random, boardConfig),
+  );
 }
 
 function cloneState(state: SimulationState): SimulationState {
@@ -195,22 +229,32 @@ function softReshuffleField(
   field: SectorState[],
   columns: number,
   random: RandomSource,
+  boardConfig: SimulationBoardConfig,
 ): SectorState[] {
   const next = [...field];
   for (let index = 0; index < next.length; index += 1) {
     const current = next[index];
-    const mutationRate = current === 'bad' || current === 'unmovable' ? 0.06 : 0.22;
+    const mutationRate =
+      current === 'bad' || current === 'unmovable'
+        ? boardConfig.reshuffleProtectedMutationRate
+        : boardConfig.reshuffleMutationRate;
     if (random() > mutationRate) {
       continue;
     }
-    next[index] = sampleFieldState(random);
+    next[index] = sampleFieldState(random, boardConfig);
   }
 
-  const minimumUsed = Math.max(columns * 2, Math.floor(next.length * 0.48));
+  const minimumUsed = Math.max(
+    columns,
+    Math.floor(next.length * boardConfig.minimumFieldUsedRatio),
+  );
   let usedCount = next.filter((cell) => cell === 'used').length;
   if (usedCount < minimumUsed) {
     for (let index = 0; index < next.length && usedCount < minimumUsed; index += 1) {
-      if (next[index] === 'unused' && random() < 0.55) {
+      if (
+        next[index] === 'unused' &&
+        random() < boardConfig.reshuffleUsedTopUpChance
+      ) {
         next[index] = 'used';
         usedCount += 1;
       }
@@ -224,10 +268,11 @@ function finishCompletedRow(
   state: SimulationState,
   profile: MotionProfile,
   random: RandomSource,
+  boardConfig: SimulationBoardConfig,
 ): SimulationState {
-  state.lane = createLane(state.columns);
+  state.lane = createLane(state.columns, random, boardConfig);
   state.totalClearedRows += 1;
-  state.field = softReshuffleField(state.field, state.columns, random);
+  state.field = softReshuffleField(state.field, state.columns, random, boardConfig);
   state.clusterNumber = createClusterNumber(random);
   if (state.totalClearedRows % state.rowsPerPass === 0) {
     state.passNumber += 1;
@@ -269,6 +314,7 @@ function processTransfers(
 function processCompletion(
   state: SimulationState,
   profile: MotionProfile,
+  boardConfig: SimulationBoardConfig,
   deltaMs: number,
   random: RandomSource,
 ): void {
@@ -291,7 +337,7 @@ function processCompletion(
     }
 
     if (completion.verifyIndex >= state.columns - 1) {
-      finishCompletedRow(state, profile, random);
+      finishCompletedRow(state, profile, random, boardConfig);
       state.completion = null;
       return;
     }
@@ -316,15 +362,16 @@ export function createSimulationState(
   config: SimulationConfig,
   random: RandomSource = Math.random,
 ): SimulationState {
+  const boardConfig = getBoardConfig(config);
   return {
     activeTransfers: [],
     clusterNumber: createClusterNumber(random),
     columns: config.columns,
     completion: null,
     elapsedMs: 0,
-    field: createField(config.columns, config.fieldRows, random),
+    field: createField(config.columns, config.fieldRows, random, boardConfig),
     fieldRows: config.fieldRows,
-    lane: createLane(config.columns),
+    lane: createLane(config.columns, random, boardConfig),
     passNumber: 1,
     pendingMoveMs: 0,
     rowsPerPass: config.rowsPerPass,
@@ -351,7 +398,15 @@ export function getLaneVisualState(
     return 'highlight';
   }
 
-  return state.lane[laneIndex]?.state ?? 'unused';
+  const laneState = state.lane[laneIndex]?.state ?? 'unused';
+  if (laneState === 'used') {
+    return 'lane-used';
+  }
+  if (laneState === 'writing') {
+    return 'lane-writing';
+  }
+
+  return 'unused';
 }
 
 export function advanceSimulation(
@@ -372,12 +427,13 @@ export function advanceSimulation(
 
   const state = cloneState(currentState);
   const profile = getMotionProfile(config);
+  const boardConfig = getBoardConfig(config);
 
   state.elapsedMs += deltaMs;
   state.pendingMoveMs -= deltaMs;
 
   processTransfers(state, profile, deltaMs);
-  processCompletion(state, profile, deltaMs, random);
+  processCompletion(state, profile, boardConfig, deltaMs, random);
 
   let launchedTransfers = 0;
 
@@ -392,7 +448,12 @@ export function advanceSimulation(
       state.pendingMoveMs += profile.moveIntervalMs;
 
       if (launched === 0) {
-        state.field = softReshuffleField(state.field, state.columns, random);
+        state.field = softReshuffleField(
+          state.field,
+          state.columns,
+          random,
+          boardConfig,
+        );
         break;
       }
     }

@@ -1,16 +1,14 @@
 # Checkpoint
 
-- `step`: `distribution-post-green`
-- `note`: Windows EXE distribution helpers and the non-Windows Python launcher are implemented and locally validated.
+- `step`: `commit-prep-start`
+- `note`: Preparing a clean repo commit with only required app files, excluding screenshots and local notes/docs.
 - `branch`: `codex/lofi-defragger`
-- `head`: `58d013b116ea0e787b8a5f26d63bbf44223a764e`
-- `next_cmd`: `git add . && git commit -m "feat: add distribution helpers"`
+- `head`: `8d4a8e68f984946425a360008f7bfb0727d0d942`
+- `next_cmd`: `git add <required-files> && git commit`
 
 ## Validations
 
-- `python3 -m py_compile launch.py` - passed
-- `python3 launch.py --dry-run` - passed
-- `npm run typecheck` - passed
-- `npm run lint` - passed
-- `npm run test` - passed
-- `npm run build` - passed
+- `npm run typecheck`: `previously passed`
+- `npm run lint`: `previously passed`
+- `npm run test`: `previously passed`
+- `npm run build`: `previously passed`

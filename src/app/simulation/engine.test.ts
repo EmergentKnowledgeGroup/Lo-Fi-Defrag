@@ -4,6 +4,7 @@ import type { SimulationConfig } from '../../shared/types';
 import {
   advanceSimulation,
   createSimulationState,
+  getLaneVisualState,
   selectRandomUsedSource,
 } from './engine';
 
@@ -19,6 +20,16 @@ function sequenceRandom(values: number[]): () => number {
 const BASE_CONFIG: SimulationConfig = {
   baseSpeed: 1,
   beatSyncEnabled: false,
+  boardConfig: {
+    fieldBadRatio: 0.01,
+    fieldUnmovableRatio: 0.015,
+    fieldUsedRatio: 0.28,
+    laneSeedUsedRatio: 0,
+    minimumFieldUsedRatio: 0.18,
+    reshuffleMutationRate: 0.16,
+    reshuffleProtectedMutationRate: 0.04,
+    reshuffleUsedTopUpChance: 0.24,
+  },
   columns: 4,
   effectiveBpm: null,
   energyLevel: 0,
@@ -113,6 +124,27 @@ describe('simulation engine', () => {
     expect(tick.lane.every((slot) => slot.state === 'unused')).toBe(true);
   });
 
+  it('only highlights the lane once completion starts', () => {
+    const state = createSimulationState(
+      { ...BASE_CONFIG, columns: 3 },
+      sequenceRandom([0.15]),
+    );
+    state.lane = [{ state: 'used' }, { state: 'writing' }, { state: 'unused' }];
+
+    expect(getLaneVisualState(state, 0)).toBe('lane-used');
+    expect(getLaneVisualState(state, 1)).toBe('lane-writing');
+    expect(getLaneVisualState(state, 2)).toBe('unused');
+
+    state.completion = {
+      phase: 'flash',
+      remainingMs: 40,
+      verifyIndex: -1,
+    };
+
+    expect(getLaneVisualState(state, 0)).toBe('highlight');
+    expect(getLaneVisualState(state, 2)).toBe('highlight');
+  });
+
   it('occasionally launches two movers at higher synced speeds', () => {
     const config: SimulationConfig = {
       ...BASE_CONFIG,
@@ -127,5 +159,52 @@ describe('simulation engine', () => {
 
     expect(tick.launchedTransfers).toBe(2);
     expect(tick.state.activeTransfers).toHaveLength(2);
+  });
+
+  it('skips over pre-used lane cells when picking the next destination', () => {
+    const boardConfig = BASE_CONFIG.boardConfig ?? {
+      fieldBadRatio: 0.01,
+      fieldUnmovableRatio: 0.015,
+      fieldUsedRatio: 0.28,
+      laneSeedUsedRatio: 0,
+      minimumFieldUsedRatio: 0.18,
+      reshuffleMutationRate: 0.16,
+      reshuffleProtectedMutationRate: 0.04,
+      reshuffleUsedTopUpChance: 0.24,
+    };
+    const config: SimulationConfig = {
+      ...BASE_CONFIG,
+      columns: 4,
+      boardConfig: {
+        ...boardConfig,
+        laneSeedUsedRatio: 0.15,
+      },
+    };
+    const state = createSimulationState(config, sequenceRandom([0.95]));
+    state.lane = [
+      { state: 'used' },
+      { state: 'unused' },
+      { state: 'unused' },
+      { state: 'unused' },
+    ];
+    state.field = [
+      'used',
+      'unused',
+      'unused',
+      'unused',
+      'unused',
+      'unused',
+      'unused',
+      'unused',
+    ];
+
+    const tick = advanceSimulation(
+      state,
+      config,
+      20,
+      sequenceRandom([0, 0]),
+    ).state;
+
+    expect(tick.activeTransfers[0]?.laneIndex).toBe(1);
   });
 });

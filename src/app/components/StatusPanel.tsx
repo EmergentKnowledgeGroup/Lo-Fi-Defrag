@@ -24,7 +24,7 @@ const LEGEND_ITEMS = [
   { label: 'Used', cls: 'cell--used', char: '\u2588' },
   { label: 'Reading', cls: 'cell--reading', char: '\u2588' },
   { label: 'Bad', cls: 'cell--bad', char: 'B' },
-  { label: 'Unused', cls: 'cell--unused', char: '\u00B7' },
+  { label: 'Unused', cls: 'legend-row__char--unused', char: '\u2591' },
   { label: 'Writing', cls: 'cell--writing', char: '\u2588' },
   { label: 'Unmovable', cls: 'cell--unmovable', char: 'X' },
 ] as const;

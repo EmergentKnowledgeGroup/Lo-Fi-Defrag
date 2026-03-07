@@ -1,7 +1,11 @@
 import { startTransition, useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_ROWS_PER_PASS } from '../../shared/session';
-import type { SimulationConfig, SimulationState } from '../../shared/types';
+import type {
+  SimulationBoardConfig,
+  SimulationConfig,
+  SimulationState,
+} from '../../shared/types';
 import {
   advanceSimulation,
   createSimulationState,
@@ -16,11 +20,6 @@ interface SimulationOptions {
   speed: number;
 }
 
-interface ViewportDimensions {
-  height: number;
-  width: number;
-}
-
 function createSeededRandom(seed: number): () => number {
   let value = Math.max(1, seed);
   return () => {
@@ -29,36 +28,23 @@ function createSeededRandom(seed: number): () => number {
   };
 }
 
-function getViewportDimensions(): ViewportDimensions {
-  if (typeof window === 'undefined') {
-    return { height: 900, width: 1440 };
-  }
-
-  return {
-    height: window.innerHeight,
-    width: window.innerWidth,
-  };
-}
-
 /**
- * Compute grid density based on viewport.
- * Each cell is a single monospace character (~7px wide, ~14px tall at 12px font).
- * We want the grid to fill most of the window, leaving ~180px for bottom panels.
+ * Fixed board density for the 720×500 virtual DOS canvas.
+ * The board now uses strict pixel-quantized VGA-like geometry:
+ * 80 columns at 9px each and 14 total rows at 16px each.
  */
-function getBoardDensity(viewport: ViewportDimensions): Pick<
-  SimulationConfig,
-  'columns' | 'fieldRows'
-> {
-  const charWidth = 7.2;
-  const charHeight = 14;
-  const bottomPanelHeight = 180;
-  const titleBarHeight = 24;
-  const availableWidth = viewport.width - 4; // 2px padding each side
-  const availableHeight = viewport.height - bottomPanelHeight - titleBarHeight;
-  const columns = Math.max(40, Math.floor(availableWidth / charWidth));
-  const fieldRows = Math.max(12, Math.floor(availableHeight / charHeight));
-  return { columns, fieldRows };
-}
+const DOS_COLUMNS = 80;
+const DOS_FIELD_ROWS = 13;
+const DOS_BOARD_CONFIG: SimulationBoardConfig = {
+  fieldBadRatio: 0.01,
+  fieldUnmovableRatio: 0.015,
+  fieldUsedRatio: 0.28,
+  laneSeedUsedRatio: 0.15,
+  minimumFieldUsedRatio: 0.18,
+  reshuffleMutationRate: 0.16,
+  reshuffleProtectedMutationRate: 0.04,
+  reshuffleUsedTopUpChance: 0.24,
+};
 
 export function useSimulation(options: SimulationOptions): {
   rowsCompletedInPass: number;
@@ -67,15 +53,14 @@ export function useSimulation(options: SimulationOptions): {
   const randomRef = useRef(
     createSeededRandom(Math.floor(Math.random() * 0x7fffffff) || 90210),
   );
-  const [viewport, setViewport] = useState<ViewportDimensions>(getViewportDimensions);
-  const density = getBoardDensity(viewport);
   const config: SimulationConfig = {
     baseSpeed: options.speed,
     beatSyncEnabled: options.beatSyncEnabled,
-    columns: density.columns,
+    boardConfig: DOS_BOARD_CONFIG,
+    columns: DOS_COLUMNS,
     effectiveBpm: options.effectiveBpm,
     energyLevel: options.energyLevel,
-    fieldRows: density.fieldRows,
+    fieldRows: DOS_FIELD_ROWS,
     rowsPerPass: DEFAULT_ROWS_PER_PASS,
   };
   const configRef = useRef(config);
@@ -83,29 +68,6 @@ export function useSimulation(options: SimulationOptions): {
   const [state, setState] = useState<SimulationState>(() =>
     createSimulationState(config, randomRef.current),
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      setViewport(getViewportDimensions());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    setState((currentState) => {
-      if (
-        currentState.columns === config.columns &&
-        currentState.fieldRows === config.fieldRows
-      ) {
-        return currentState;
-      }
-      return createSimulationState(config, randomRef.current);
-    });
-  }, [config.columns, config.fieldRows]);
 
   useEffect(() => {
     if (!options.isRunning) {
@@ -116,14 +78,14 @@ export function useSimulation(options: SimulationOptions): {
     let lastFrameTime = performance.now();
 
     const tick = (now: number) => {
-      const delta = Math.min(80, now - lastFrameTime);
+      const delta = Math.max(0, Math.min(80, now - lastFrameTime));
       lastFrameTime = now;
       startTransition(() => {
         setState((currentState) =>
           advanceSimulation(
             currentState,
             configRef.current,
-            Math.max(16, delta),
+            delta,
             randomRef.current,
           ).state,
         );

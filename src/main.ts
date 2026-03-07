@@ -16,6 +16,7 @@ if (started) {
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 let mainWindow: BrowserWindow | null = null;
+const DOS_ASPECT_RATIO = 720 / 500;
 
 const AUDIO_FILTERS: FileFilter[] = [
   {
@@ -26,10 +27,11 @@ const AUDIO_FILTERS: FileFilter[] = [
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 1460,
-    height: 980,
-    minHeight: 680,
-    minWidth: 980,
+    useContentSize: true,
+    width: 1440,
+    height: 1000,
+    minHeight: 750,
+    minWidth: 1080,
     autoHideMenuBar: true,
     backgroundColor: '#4c5cf2',
     show: false,
@@ -41,6 +43,8 @@ const createWindow = () => {
       sandbox: false,
     },
   });
+
+  mainWindow.setAspectRatio(DOS_ASPECT_RATIO);
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show();

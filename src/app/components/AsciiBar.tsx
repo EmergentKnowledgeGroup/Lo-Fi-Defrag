@@ -53,7 +53,7 @@ export function AsciiBar({
     onChange?.(clampNormalizedValue(nextValue));
   };
 
-  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+  const handleClick = (event: MouseEvent<HTMLSpanElement>) => {
     if (!isInteractive) {
       return;
     }
@@ -63,7 +63,7 @@ export function AsciiBar({
     commitValue(x / rect.width);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
     if (!isInteractive) {
       return;
     }
@@ -78,9 +78,9 @@ export function AsciiBar({
   };
 
   return (
-    <div
+    <span
       className={`ascii-bar ${
-        isInteractive ? 'ascii-bar--interactive' : 'ascii-bar--static'
+        isInteractive ? 'ascii-bar--interactive' : ''
       }`}
       role={isInteractive ? 'slider' : 'meter'}
       aria-label={label}
@@ -96,21 +96,25 @@ export function AsciiBar({
       {Array.from({ length: safeTiles }, (_, i) => {
         const isFilled = i < filledCount;
         const isHead = showHead && i === filledCount - 1 && filledCount > 0;
+        const glyph = isFilled || isHead ? null : '\u2591';
         return (
           <span
             key={i}
-            className={`ascii-bar__tile ${
-              isHead
-                ? 'ascii-bar__tile--head'
-                : isFilled
-                  ? 'ascii-bar__tile--filled'
-                  : 'ascii-bar__tile--empty'
-            }`}
+            aria-hidden="true"
+            className={
+              `ascii-bar__tile ${
+                isHead
+                  ? 'ascii-bar__tile--head'
+                  : isFilled
+                    ? 'ascii-bar__tile--filled'
+                    : 'ascii-bar__tile--empty'
+              }`
+            }
           >
-            {isHead ? '\u2588' : isFilled ? '\u2588' : '\u2591'}
+            {glyph ? <span className="ascii-bar__glyph">{glyph}</span> : null}
           </span>
         );
       })}
-    </div>
+    </span>
   );
 }

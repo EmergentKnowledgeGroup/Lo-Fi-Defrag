@@ -7,6 +7,7 @@ import {
   findNextPlayableTrackId,
   findPreviousPlayableTrackId,
   findTrackIndex,
+  getImportedTrackSelection,
   mergeImportedTracks,
   movePlaylistItem,
   removePlaylistItem,
@@ -283,8 +284,20 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
       return;
     }
 
+    const nextSelectedTrackId = getImportedTrackSelection(
+      playlistRef.current,
+      result.tracks,
+      currentTrackIdRef.current,
+      mode,
+    );
     const merged = mergeImportedTracks(playlistRef.current, result.tracks);
     setPlaylist(merged);
+
+    if (nextSelectedTrackId) {
+      pendingSeekRef.current = 0;
+      setCurrentTrackId(nextSelectedTrackId);
+      return;
+    }
 
     if (!currentTrackIdRef.current) {
       const firstPlayableTrack = findFirstPlayableTrackId(merged);

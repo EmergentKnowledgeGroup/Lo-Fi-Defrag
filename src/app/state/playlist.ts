@@ -117,3 +117,30 @@ export function findPreviousPlayableTrackId(
 export function findFirstPlayableTrackId(playlist: PlaylistItem[]): string | null {
   return playlist.find((track) => !track.missing)?.id ?? null;
 }
+
+export function getImportedTrackSelection(
+  existing: PlaylistItem[],
+  imported: PlaylistItem[],
+  currentTrackId: string | null,
+  mode: 'files' | 'folder',
+): string | null {
+  const importedPlayableTrackId = findFirstPlayableTrackId(imported);
+  if (!importedPlayableTrackId) {
+    return null;
+  }
+
+  if (mode === 'files') {
+    return importedPlayableTrackId;
+  }
+
+  const currentTrack =
+    currentTrackId !== null
+      ? existing.find((track) => track.id === currentTrackId) ?? null
+      : null;
+
+  if (!currentTrack || currentTrack.missing) {
+    return importedPlayableTrackId;
+  }
+
+  return null;
+}

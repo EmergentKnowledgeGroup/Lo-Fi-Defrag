@@ -61,9 +61,21 @@ export interface CompletionState {
   verifyIndex: number;
 }
 
+export interface SimulationBoardConfig {
+  fieldBadRatio: number;
+  fieldUnmovableRatio: number;
+  fieldUsedRatio: number;
+  laneSeedUsedRatio: number;
+  minimumFieldUsedRatio: number;
+  reshuffleMutationRate: number;
+  reshuffleProtectedMutationRate: number;
+  reshuffleUsedTopUpChance: number;
+}
+
 export interface SimulationConfig {
   baseSpeed: number;
   beatSyncEnabled: boolean;
+  boardConfig?: SimulationBoardConfig;
   columns: number;
   effectiveBpm: number | null;
   energyLevel: number;
