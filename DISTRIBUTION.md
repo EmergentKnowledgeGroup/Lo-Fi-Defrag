@@ -1,29 +1,37 @@
 # Distribution Guide
 
-Lo-fi Defragger is an Electron Forge application. You can run it from source, package it locally, or use the repository's manual Windows build workflow.
+Lo-fi Defragger is an Electron Forge desktop app. This page separates the easy, click-first paths from the developer tooling so nobody has to guess which is which.
 
-## Run from source
+## Windows: Run It Without a Terminal
 
-Install Node.js 22 LTS, then run:
+1. Install [Node.js 22 LTS](https://nodejs.org/).
+2. Download the repository ZIP from GitHub and extract it.
+3. Double-click `Run Lo-fi Defragger.bat`.
 
-```bash
-npm ci
-npm run dev
+On the first run, the launcher performs the locked dependency install for you. It then starts the app. Future launches reuse that setup. The terminal window remains available only long enough to show a useful error if startup fails.
+
+## Windows: Make Your Own Installer
+
+Double-click `Build Lo-fi Defragger Installer.bat`. It delegates to the existing `build-windows.bat`, which runs a clean dependency install and packages the x64 Windows installer.
+
+Expected output:
+
+```text
+out\make\squirrel.windows\x64\
+  Lo-fi Defragger-<version> Setup.exe
+  RELEASES
+  *.nupkg
 ```
 
-On macOS or Linux, `python3 launch.py` is a convenience launcher. It starts a packaged build when one exists for the current platform; otherwise it installs dependencies when needed and starts development mode.
+The installer is currently unsigned. Windows SmartScreen can warn about unsigned executables; do not advertise the result as a signed public release.
 
-Useful launcher options:
+## Windows: Let GitHub Build It
 
-```bash
-python3 launch.py --dry-run
-python3 launch.py --source
-python3 launch.py --install
-```
+The repository includes a manual **Build Windows EXE** workflow. Open the repository's **Actions** tab, select that workflow, choose **Run workflow**, and download `lofi-defragger-windows-exe` from the completed run. This produces the same `.exe`, `.nupkg`, and `RELEASES` artifacts without a local Node installation.
 
-## Make local packages
+## Other Platforms
 
-Run package commands on the operating system you are targeting.
+On macOS or Linux, `python3 launch.py` is the convenience launcher. It opens a packaged build when one exists for the current platform; otherwise it installs dependencies when needed and starts development mode.
 
 | Target | Command | Result |
 | --- | --- | --- |
@@ -32,15 +40,9 @@ Run package commands on the operating system you are targeting.
 | Linux | `npm run make:linux` | Debian and RPM packages under `out/make/` |
 | macOS | `npm run make:mac` | ZIP archive under `out/make/zip/` |
 
-On Windows, double-click `build-windows.bat` to run a clean install followed by `npm run make:win`.
+Build platform-specific packages on their matching operating system.
 
-## GitHub Actions Windows build
-
-The `Build Windows EXE` workflow is intentionally manual. In GitHub, open **Actions**, choose **Build Windows EXE**, and select **Run workflow**. It uploads the generated `.exe`, `.nupkg`, and `RELEASES` files as a workflow artifact.
-
-The workflow does not create a GitHub Release or sign the installer. Unsigned Windows builds may trigger SmartScreen. A public release process should add signing credentials and an explicit release-upload step before advertising installer downloads.
-
-## Before publishing a release
+## Before Publishing a Release
 
 Run this local check set:
 
