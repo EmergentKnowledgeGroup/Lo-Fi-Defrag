@@ -10,8 +10,7 @@ interface TransportPanelProps {
   isMuted: boolean;
   isPlaying: boolean;
   isTestMode: boolean;
-  onImportFiles: () => void;
-  onImportFolder: () => void;
+  importError: string | null;
   onMuteToggle: () => void;
   onNext: () => void;
   onPlayPause: () => Promise<void>;
@@ -35,8 +34,7 @@ export function TransportPanel({
   isMuted,
   isPlaying,
   isTestMode,
-  onImportFiles,
-  onImportFolder,
+  importError,
   onMuteToggle,
   onNext,
   onPlayPause,
@@ -57,7 +55,9 @@ export function TransportPanel({
       console.error('Play/pause action failed.', error);
     });
   };
-  const statusMessage = currentTrackMissing
+  const statusMessage = importError
+    ? importError
+    : currentTrackMissing
     ? 'Current file is missing. Pick another track or re-import the source.'
     : isPlaying
       ? 'Playback running. The defrag board is following the active track.'
@@ -115,12 +115,6 @@ export function TransportPanel({
         <button type="button" className="button" onClick={onNext}>
           Next
         </button>
-        <button type="button" className="button" onClick={onImportFiles}>
-          Import
-        </button>
-        <button type="button" className="button" onClick={onImportFolder}>
-          Folder
-        </button>
         <button type="button" className="button" onClick={onMuteToggle}>
           {isMuted ? 'Unmute' : 'Mute'}
         </button>
@@ -150,7 +144,7 @@ export function TransportPanel({
 
       <p
         className={`transport-status ${
-          currentTrackMissing ? 'transport-status--warning' : ''
+          currentTrackMissing || importError ? 'transport-status--warning' : ''
         }`}
       >
         {statusMessage}

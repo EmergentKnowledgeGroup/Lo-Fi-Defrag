@@ -20,12 +20,6 @@ export const SKINS: SkinDefinition[] = [
     label: 'CRT Lounge',
     tone: 'Retro lofi lounge',
   },
-  {
-    description: 'A more editorial desk setup: parchment panels, high-contrast accents, and cleaner spacing.',
-    id: 'studio-modern',
-    label: 'Studio Modern',
-    tone: 'Modern homage',
-  },
 ];
 
 export function getSkin(id: SkinId): SkinDefinition {

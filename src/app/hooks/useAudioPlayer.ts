@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { PersistedAppState, PlaylistItem, RepeatMode } from '../../shared/types';
+import type {
+  ImportResult,
+  PersistedAppState,
+  PlaylistItem,
+  RepeatMode,
+} from '../../shared/types';
 import { estimateBpmFromPeaks, normalizeFrequencyEnergy } from '../audio/tempo';
 import {
   findFirstPlayableTrackId,
@@ -38,6 +43,7 @@ export interface AudioPlayerHook {
   handleAudioPlay: () => void;
   handleAudioTimeUpdate: () => void;
   importAudio: (mode: 'files' | 'folder') => Promise<void>;
+  importError: string | null;
   isMuted: boolean;
   isPlaying: boolean;
   moveTrackDown: (trackId: string) => void;
@@ -95,6 +101,7 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
   const [estimatedBpm, setEstimatedBpm] = useState<number | null>(null);
   const [bpmStatus, setBpmStatus] = useState<BpmStatus>('idle');
   const [energyLevel, setEnergyLevel] = useState(0);
+  const [importError, setImportError] = useState<string | null>(null);
   const currentTrack =
     playlist.find((track) => track.id === currentTrackId) ?? null;
 
@@ -282,7 +289,19 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
   }
 
   async function importAudio(mode: 'files' | 'folder'): Promise<void> {
-    const result = await window.lofiDefragger.importAudio({ mode });
+    let result: ImportResult;
+    setImportError(null);
+    try {
+      result = await window.lofiDefragger.importAudio({ mode });
+    } catch {
+      setImportError(
+        mode === 'folder'
+          ? 'Unable to read that folder. Try a smaller folder or choose files directly.'
+          : 'Unable to import those files. Try a different selection.',
+      );
+      return;
+    }
+
     if (result.tracks.length === 0) {
       return;
     }
@@ -552,6 +571,7 @@ export function useAudioPlayer(initialSession: PersistedAppState): AudioPlayerHo
     handleAudioPlay,
     handleAudioTimeUpdate,
     importAudio,
+    importError,
     isMuted,
     isPlaying,
     moveTrackDown,

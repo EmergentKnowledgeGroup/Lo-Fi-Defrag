@@ -1,7 +1,6 @@
 export const VALID_SKIN_IDS = [
   'classic-ms',
   'crt-lounge',
-  'studio-modern',
 ] as const;
 
 export type SkinId = (typeof VALID_SKIN_IDS)[number];

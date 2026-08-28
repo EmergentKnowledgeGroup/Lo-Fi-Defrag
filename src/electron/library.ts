@@ -1,4 +1,5 @@
 import { constants as fsConstants } from 'node:fs';
+import type { Dirent } from 'node:fs';
 import { access, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -7,6 +8,8 @@ import { parseFile } from 'music-metadata';
 
 import { createTrackId, isSupportedAudioPath, trackTitleFromPath } from '../shared/media';
 import type { PlaylistItem } from '../shared/types';
+
+const METADATA_PARSE_CONCURRENCY = 8;
 
 async function exists(filePath: string): Promise<boolean> {
   try {
@@ -27,7 +30,12 @@ async function walkDirectory(
   }
   visited.add(canonicalPath);
 
-  const entries = await readdir(rootPath, { withFileTypes: true });
+  let entries: Dirent[];
+  try {
+    entries = await readdir(rootPath, { withFileTypes: true });
+  } catch {
+    return [];
+  }
   const audioFiles = await Promise.all(
     entries.map(async (entry) => {
       const resolvedPath = path.join(rootPath, entry.name);
@@ -41,6 +49,32 @@ async function walkDirectory(
     }),
   );
   return audioFiles.flat().sort((left, right) => left.localeCompare(right));
+}
+
+async function mapWithConcurrency<TInput, TOutput>(
+  items: TInput[],
+  concurrency: number,
+  mapper: (item: TInput) => Promise<TOutput>,
+): Promise<TOutput[]> {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const results = new Array<TOutput>(items.length);
+  let nextIndex = 0;
+  const workerCount = Math.min(Math.max(1, concurrency), items.length);
+
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (nextIndex < items.length) {
+        const currentIndex = nextIndex;
+        nextIndex += 1;
+        results[currentIndex] = await mapper(items[currentIndex]);
+      }
+    }),
+  );
+
+  return results;
 }
 
 async function buildPlaylistItem(filePath: string): Promise<PlaylistItem> {
@@ -89,7 +123,11 @@ export async function collectAudioFiles(
 
 export async function importPlaylistItems(filePaths: string[]): Promise<PlaylistItem[]> {
   const uniquePaths = Array.from(new Set(filePaths));
-  const tracks = await Promise.all(uniquePaths.map((filePath) => buildPlaylistItem(filePath)));
+  const tracks = await mapWithConcurrency(
+    uniquePaths,
+    METADATA_PARSE_CONCURRENCY,
+    buildPlaylistItem,
+  );
   return tracks.sort((left, right) => left.title.localeCompare(right.title));
 }
 

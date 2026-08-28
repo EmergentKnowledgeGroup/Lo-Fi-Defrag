@@ -49,11 +49,17 @@ function useDosTransform(): DosTransform {
   return transform;
 }
 
-function DosFrame({ children }: { children: ReactNode }) {
+function DosFrame({
+  children,
+  skinId = 'classic-ms',
+}: {
+  children: ReactNode;
+  skinId?: SkinId;
+}) {
   const dosTransform = useDosTransform();
 
   return (
-    <div className="dos-viewport">
+    <div className="dos-viewport" data-skin={skinId}>
       <div className="dos-stage">
         <div
           className="dos-canvas"
@@ -260,8 +266,8 @@ function AppShell({
   };
 
   return (
-    <DosFrame>
-      <div className="app-shell" data-skin={skinId}>
+    <DosFrame skinId={skinId}>
+      <div className="app-shell">
         <button
           type="button"
           className={`app-shell__help-hint ${isHelpOpen ? 'app-shell__help-hint--active' : ''}`}
@@ -293,15 +299,10 @@ function AppShell({
             currentTrackMissing={currentTrackMissing}
             currentTrackTitle={currentTrackTitle}
             duration={player.trackDuration}
+            importError={player.importError}
             isMuted={player.isMuted}
             isPlaying={player.isPlaying}
             isTestMode={isTestMode}
-            onImportFiles={() => {
-              void player.importAudio('files');
-            }}
-            onImportFolder={() => {
-              void player.importAudio('folder');
-            }}
             onMuteToggle={() => player.setMuted(!player.isMuted)}
             onNext={player.skipNext}
             onPlayPause={player.togglePlayPause}
@@ -329,6 +330,12 @@ function AppShell({
             isOpen={isPlaylistOpen}
             outsideCloseWarning={playlistOutsideClicks === 1}
             onClose={closePlaylist}
+            onImportFiles={() => {
+              void player.importAudio('files');
+            }}
+            onImportFolder={() => {
+              void player.importAudio('folder');
+            }}
             onMoveDown={player.moveTrackDown}
             onMoveUp={player.moveTrackUp}
             onRemove={player.removeTrack}
