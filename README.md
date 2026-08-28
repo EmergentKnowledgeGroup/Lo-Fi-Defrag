@@ -4,7 +4,7 @@
 
 Lo-fi Defragger is a local-first desktop music player and ambient visualizer. It turns your own music library into a looping, MS-DOS-inspired disk-defragmentation simulation.
 
-The app does not touch, scan, or modify your disk. It is a visual toy with a real local-file playlist underneath it.
+The app does not scan your whole disk or modify source audio files. It reads files and folders that you explicitly select and stores local playlist state.
 
 ## Quick start
 

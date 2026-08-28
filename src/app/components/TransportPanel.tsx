@@ -143,6 +143,7 @@ export function TransportPanel({
       </div>
 
       <p
+        aria-live="polite"
         className={`transport-status ${
           currentTrackMissing || importError ? 'transport-status--warning' : ''
         }`}
