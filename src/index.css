@@ -68,7 +68,7 @@ body {
   overflow: hidden;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  background: #0000aa;
+  background: var(--app-background);
 }
 
 .dos-stage {
@@ -150,32 +150,6 @@ button {
   --bar-empty: #1a4422;
   --bar-head: #ffbe56;
   --tile-separator: #214d34;
-}
-
-[data-skin='studio-modern'] {
-  color-scheme: light;
-  --app-background: #d5c4a1;
-  --app-panel: #e8dcc8;
-  --app-panel-soft: #ddd0ba;
-  --app-ink: #1d1814;
-  --app-muted: #6b5f50;
-  --app-border: #b0a48e;
-  --app-accent: #ef6b2d;
-  --app-accent-soft: #3d1a08;
-  --ui-control-height: 18px;
-  --ui-row-padding-y: 2px;
-  --cell-used: #1d1814;
-  --cell-reading: #4f6fff;
-  --cell-writing: #ef6b2d;
-  --cell-bad: #ff0000;
-  --cell-unmovable: #8a7a66;
-  --cell-unused: #b0a48e;
-  --cell-lane: #ef6b2d;
-  --cell-highlight: #1d1814;
-  --bar-filled: #1d1814;
-  --bar-empty: #b0a48e;
-  --bar-head: #ef6b2d;
-  --tile-separator: #c7baa4;
 }
 
 /* ── Boot Screen ─────────────────────────────────────── */
@@ -631,7 +605,9 @@ button {
 }
 
 .playlist-launcher-row__button {
+  flex: 0 0 auto;
   min-width: 12ch;
+  white-space: nowrap;
 }
 
 .playlist-launcher-row__meta {
@@ -663,7 +639,7 @@ button {
 .dos-overlay__header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 16px;
 }
 
@@ -679,15 +655,44 @@ button {
   text-transform: uppercase;
 }
 
+.dos-overlay__headerActions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.dos-overlay__headerButton {
+  height: 18px;
+  border: 1px solid var(--app-ink);
+  padding: 1px 5px 0;
+  background: transparent;
+  color: var(--app-ink);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.dos-overlay__headerButton:hover,
+.dos-overlay__headerButton:focus-visible {
+  background: var(--app-ink);
+  color: var(--app-background);
+  outline: 0;
+}
+
 .dos-overlay__close {
-  position: absolute;
-  top: 10px;
-  right: 11px;
+  flex: none;
   border: 0;
   padding: 0;
   background: transparent;
   color: var(--app-ink);
   line-height: 1;
+}
+
+.dos-overlay__close:hover,
+.dos-overlay__close:focus-visible {
+  background: var(--app-ink);
+  color: var(--app-background);
+  outline: 0;
 }
 
 .dos-overlay__body {
@@ -714,6 +719,17 @@ button {
 
 .dos-overlay--playlist {
   z-index: 1;
+  padding-bottom: 54px;
+}
+
+.dos-overlay--playlist .dos-overlay__footer {
+  left: 12px;
+  right: 12px;
+  bottom: 13px;
+  min-height: 12px;
+  font-size: 12px;
+  line-height: 12px;
+  white-space: nowrap;
 }
 
 .help-overlay {
@@ -766,16 +782,106 @@ button {
   color: var(--app-muted);
 }
 
+.playlist-overlay__scrollArea {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9px;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .playlist-overlay__list {
   list-style: none;
   margin: 0;
-  padding: 0 2px 0 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.playlist-overlay__list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.playlist-scrollbar {
+  display: grid;
+  grid-template-rows: 18px minmax(0, 1fr) 18px;
+  width: 9px;
+  min-height: 0;
+  background: transparent;
+}
+
+.playlist-scrollbar__button {
+  position: relative;
+  width: 9px;
+  height: 18px;
+  border: 1px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  padding: 0;
+  background: #c0c0c0;
+  box-sizing: border-box;
+}
+
+.playlist-scrollbar__button::before {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: 0;
+  height: 0;
+}
+
+.playlist-scrollbar__button--up::before {
+  top: 5px;
+  border-right: 3px solid transparent;
+  border-bottom: 5px solid #000000;
+  border-left: 3px solid transparent;
+}
+
+.playlist-scrollbar__button--down::before {
+  top: 6px;
+  border-top: 5px solid #000000;
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
+}
+
+.playlist-scrollbar__track {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.playlist-scrollbar__trackPattern {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: flex;
+  width: 8px;
+  flex-direction: column;
+  color: var(--cell-used);
+  font-size: 16px;
+  line-height: 16px;
+  text-align: left;
+  user-select: none;
+  white-space: pre;
+}
+
+.playlist-scrollbar__thumb {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  min-height: 18px;
+  border: 0;
+  background: #c0c0c0;
+  box-shadow:
+    inset 1px 1px #ffffff,
+    inset -1px -1px #404040;
+  box-sizing: border-box;
 }
 
 .playlist-overlay__item {

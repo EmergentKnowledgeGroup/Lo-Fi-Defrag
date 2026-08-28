@@ -1,73 +1,64 @@
 # Lo-fi Defragger
 
-> *It's 2 AM. The blocks are moving. The trumpet is playing. Everything is fine.*
+[Watch the demo: Lo-Fi Defrag.mp4 (31 seconds, 21.7 MB)](./Lo-Fi%20Defrag.mp4)
 
-Lo-fi Defragger is a desktop ambient app that recreates the MS-DOS 6.22 Microsoft Defrag experience as a looping music visualizer. Load your own tracks — or use the bundled original soundtrack — and watch a dense retro sector grid "defragment" in sync with the beat.
+Lo-fi Defragger is a local-first desktop music player and ambient visualizer. It turns your own music library into a looping, MS-DOS-inspired disk-defragmentation simulation.
 
-It's not useful. It's not productive. It's perfect.
+The app does not scan your whole disk or modify source audio files. It reads files and folders that you explicitly select and stores local playlist state.
 
-![Lo-fi Defragger Screenshot](2026-03-06-1838_Lo-fi_Defragger.png)
+## Quick start
 
-## What It Does
-
-- **Retro defrag simulation** — A dense grid of block characters (`██`) continuously reorganizes across fake disk passes, rendered at virtual DOS resolution and scaled up with nearest-neighbor interpolation for that chunky pixel look
-- **Beat-synced animation** — Block movement cadence syncs to music playback with BPM detection and manual speed control
-- **Built-in music player** — Local file playback with playlist management, transport controls, seeking, volume, and repeat modes
-- **Authentic DOS aesthetic** — Perfect DOS VGA 437 font, no antialiasing, CRT-accurate colors, box-drawing borders, the whole thing looks like DOSBox went fullscreen
-- **Multiple skins** — Visual themes built on the same simulation engine
-- **Bundled soundtrack** — 10 original lo-fi tracks composed specifically for this app (see [TRACKLIST.md](TRACKLIST.md))
-
-## Quick Start
+Prerequisite: Node.js 22 LTS and npm.
 
 ```bash
+git clone https://github.com/EmergentKnowledgeGroup/Lo-Fi-Defrag.git
+cd Lo-Fi-Defrag
 npm ci
 npm run dev
 ```
 
-Load music files or a folder. When playback starts, the defrag board comes alive. When playback pauses, the simulation idles.
+When the app opens, select `Playlist`, then use `Import` to choose files or `Folder` to add a directory. Choose a track to play it; the board animates with the audio. `Test` runs the visualizer without music.
 
-## Builds
+## What you can do
 
-| Platform | Command |
-|----------|---------|
-| Windows | `build-windows.bat` or `npm run make:win` |
-| macOS/Linux | `python3 launch.py` |
-| Generic | `npm run build` or `npm run make` |
+- Import individual local files or scan a music folder.
+- Play, pause, seek, change volume, mute, repeat, and reorder tracks.
+- Keep a playlist between launches; missing source files are marked instead of crashing the app.
+- Use beat-aware motion when a tempo can be estimated, or set the simulation speed yourself.
+- Switch between Classic MS and CRT Lounge visuals.
 
-See [TECHNICAL.md](TECHNICAL.md) for detailed build and architecture docs.
+The file picker accepts `.aac`, `.aif`, `.aiff`, `.flac`, `.m4a`, `.mp3`, `.mp4`, `.ogg`, `.opus`, `.wav`, and `.webm`. Actual playback support is provided by Electron's bundled Chromium, so codec support can vary by platform and file encoding.
 
-## The Soundtrack
+## Run and verify
 
-Lo-fi Defragger ships with 10 original tracks spanning lo-fi hip hop, liquid DnB, jazzhop, trip hop, ambient, synthwave, and lo-fi house. Every track is named after defrag terminology. Every track was written for this app.
+| Task | Command |
+| --- | --- |
+| Start the app in development | `npm run dev` |
+| Run tests | `npm run test` |
+| Type-check | `npm run typecheck` |
+| Lint | `npm run lint` |
+| Package the current platform | `npm run build` |
+| Make a Windows installer | `npm run make:win` |
+| Make Linux packages | `npm run make:linux` |
+| Make a macOS ZIP | `npm run make:mac` |
 
-Full tracklist and liner notes: [TRACKLIST.md](TRACKLIST.md)
+Run platform-specific packaging on that platform. The Windows helper script, `build-windows.bat`, runs `npm ci` followed by `npm run make:win`.
 
-| # | Track | Genre | BPM |
-|---|-------|-------|-----|
-| 01 | Defragmenting | Lo-fi Hip Hop | 75 |
-| 02 | Sector Read | Liquid Drum & Bass | 170 |
-| 03 | Cluster 0x00 | Chillhop / Jazzhop | 82 |
-| 04 | Full Optimization | Downtempo Electronica | 90 |
-| 05 | Bad Sectors | Dark Lo-fi / Trip Hop | 68 |
-| 06 | Pass 2 of 7 | Ambient Lo-fi | 70 |
-| 07 | Reading Clusters | Boom Bap / Lo-fi | 85 |
-| 08 | Unmovable | Atmospheric Jungle / DnB | 165 |
-| 09 | Elapsed Time 00:00:00 | Synthwave / Lo-fi Hybrid | 88 |
-| 10 | Write Complete | Lo-fi House / Deep House | 118 |
+## Install or build a package
 
-## Origin Story
+There is currently no signed, prebuilt release. To use the app today, run it from source with `npm run dev` or create an installer/package locally. The Windows GitHub Actions workflow can also build Windows artifacts on demand; see [DISTRIBUTION.md](DISTRIBUTION.md) for outputs, release notes, and troubleshooting.
 
-Someone put MS-DOS Defrag footage over the Interstellar theme. It was cool. Then someone said "what if it was a real app though" at 2 AM. Then a team of AI agents built the engine in one shot. Then the visual design took all night. Then the soundtrack was composed in one session. Then this README was written at 4:41 AM.
+## Soundtrack status
 
-That's how everything gets built here.
+The repository intentionally does not include music files yet. Bring your own local tracks while the curated Lo-fi Defragger soundtrack is being finalized. See [TRACKLIST.md](TRACKLIST.md) for the current policy and how to contribute music safely.
 
-## Credits
+## Project docs
 
-- **ProfessahX** — Creator, executive producer, visual direction, the "what if" guy
-- **Claude** (Anthropic) — Soundtrack prompt engineering, creative direction, documentation, visual consulting, opinions about bitmap fonts
-- **Dex** (Codex) — Core engine, simulation, audio system, Electron shell
-- **Suno.ai** — Soundtrack generation
+- [Technical guide](TECHNICAL.md): architecture, local data handling, and test surface.
+- [Distribution guide](DISTRIBUTION.md): build artifacts and release workflow.
+- [Soundtrack notes](TRACKLIST.md): current music status and contribution guidance.
+- [MIT License](LICENSE)
 
-## License
+## Contributing
 
-MIT
+Fork the repository, make a focused change, run `npm run typecheck`, `npm run lint`, and `npm run test`, then open a pull request. Please do not commit private music libraries, personal playlists, generated installers, or `out/` build artifacts.
