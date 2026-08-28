@@ -1,0 +1,45 @@
+{
+  "help": {
+    "frame": {
+      "x": 78,
+      "y": 58,
+      "width": 564,
+      "height": 280
+    },
+    "title": "LO-FI DEFRAGGER HELP",
+    "footer": "Press F1 or click outside the box to close.",
+    "items": [
+      {
+        "label": "PLAY / PAUSE",
+        "description": "Start or stop the current track without resetting the board."
+      },
+      {
+        "label": "TEST MODE",
+        "description": "Run the visualization with no song loaded."
+      },
+      {
+        "label": "PLAYLIST",
+        "description": "Open the playlist window to pick, reorder, or remove tracks."
+      },
+      {
+        "label": "BEAT SYNC",
+        "description": "Follow the active song when BPM is available, or use manual speed."
+      }
+    ]
+  },
+  "playlist": {
+    "frame": {
+      "x": 180,
+      "y": 76,
+      "width": 360,
+      "height": 308
+    },
+    "title": "PLAYLIST",
+    "footer": "Click outside twice to close, or use [x].",
+    "emptyMessage": "Import files or a folder to start.",
+    "columns": {
+      "title": "Track",
+      "length": "Length"
+    }
+  }
+}

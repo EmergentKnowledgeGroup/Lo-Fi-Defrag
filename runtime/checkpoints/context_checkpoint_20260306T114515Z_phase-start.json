@@ -1,0 +1,29 @@
+{
+  "schema": "impressio.context_checkpoint.v1",
+  "captured_at": "2026-03-06T11:45:15.923481+00:00",
+  "repo_root": "/Users/domusanimae/Documents/Lo-fi-defragger",
+  "branch": "codex/lofi-defragger",
+  "head_short": "2216016",
+  "step": "phase-start",
+  "note": "Repository initialized on feature branch. Next step is fetching official docs and scaffolding the Electron + React + Vite app.",
+  "next_cmd": "npm create vite@latest . -- --template react-ts",
+  "status": {
+    "staged": [],
+    "modified": [],
+    "untracked": [],
+    "conflicted": [],
+    "dirty": false
+  },
+  "changed_files": {
+    "working_tree": [],
+    "staged": []
+  },
+  "recent_commits": [
+    "2216016 chore: initialize repository"
+  ],
+  "checklist": [
+    "Run git status -sb and verify branch/head.",
+    "Open diff for changed files listed in checkpoint.",
+    "Resume from step + next_cmd, then write a new checkpoint after each major edit block."
+  ]
+}
